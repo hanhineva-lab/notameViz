@@ -70,8 +70,8 @@ plot_dist_density <- function(object, all_features = FALSE,
   qc_data <- assay[object$QC == "QC", ]
   sample_data <- assay[!object$QC == "QC", ]
 
-  qc_dist <- stats::dist(qc_data, method = dist_method) %>% as.numeric()
-  sample_dist <- stats::dist(sample_data, method = dist_method) %>% as.numeric()
+  qc_dist <- stats::dist(qc_data, method = dist_method) |> as.numeric()
+  sample_dist <- stats::dist(sample_data, method = dist_method) |> as.numeric()
   qc <- rep(c("QC", "Sample"), times = c(length(qc_dist), length(sample_dist)))
   qc <- rep(c("QC", "Sample"), times = c(length(qc_dist), length(sample_dist)))
   distances <- data.frame(dist = c(qc_dist, sample_dist), qc = qc)
@@ -224,7 +224,7 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE,
     # Plot bar plot of flags
     flags <- flag(object)
     flags[is.na(flags)] <- "Good"
-    flags <- factor(flags) %>% stats::relevel(ref = "Good")
+    flags <- factor(flags) |> stats::relevel(ref = "Good")
 
     fp <- ggplot(data.frame(flags), aes(x = flags)) +
       geom_bar(col = "grey50", fill = "grey80", size = 1) +
@@ -307,7 +307,7 @@ plot_sample_boxplots <- function(object, all_features = FALSE, order_by,
     data <- tidyr::unite(data, "fill_by", fill_by, remove = FALSE)
   }
 
-  data <- data %>% dplyr::arrange(order_by)
+  data <- data |> dplyr::arrange(order_by)
 
   data$Sample_ID <- factor(data$Sample_ID, levels = data$Sample_ID)
 
@@ -318,8 +318,8 @@ plot_sample_boxplots <- function(object, all_features = FALSE, order_by,
   ## Zooming outliers out of view
   if (zoom_boxplot) {
     # compute lower and upper whiskers
-    ylimits <- data %>%
-      dplyr::group_by(.data$Sample_ID) %>%
+    ylimits <- data |>
+      dplyr::group_by(.data$Sample_ID) |>
       dplyr::summarise(low = grDevices::boxplot.stats(.data$Value)$stats[1],
                        high = grDevices::boxplot.stats(.data$Value)$stats[5])
 
@@ -416,24 +416,24 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
   }
   
   # Prepare data.frame for batch means with batch and injection order range
-  batch_injections <- data_orig %>%
-    dplyr::group_by(!!dplyr::sym(batch)) %>%
+  batch_injections <- data_orig |>
+    dplyr::group_by(!!dplyr::sym(batch)) |>
     dplyr::summarise(start = min(.data$Injection_order), 
                      end = max(.data$Injection_order))
 
   batch_mean_helper <- function(data) {
-    data %>%
-      dplyr::group_by(!!dplyr::sym(batch)) %>%
-      dplyr::summarise_at(rownames(orig), finite_mean) %>%
+    data |>
+      dplyr::group_by(!!dplyr::sym(batch)) |>
+      dplyr::summarise_at(rownames(orig), finite_mean) |>
       dplyr::left_join(batch_injections, ., by = batch)
   }
   
   get_batch_means <- function(data) {
-    batch_means <- batch_mean_helper(data) %>%
+    batch_means <- batch_mean_helper(data) |>
       dplyr::mutate(QC = "Sample")
-    batch_means_qc <- data %>%
-      dplyr::filter(.data$QC == "QC") %>%
-      batch_mean_helper() %>%
+    batch_means_qc <- data |>
+      dplyr::filter(.data$QC == "QC") |>
+      batch_mean_helper() |>
       dplyr::mutate(QC = "QC")
     rbind(batch_means, batch_means_qc)
   }

@@ -960,10 +960,10 @@ setMethod("manhattan_plot", c(object = "SummarizedExperiment"),
 
   if (!is.null(effect)) {
     data$y <- -log10(data[, p]) * sign(data[, effect])
-    p_labels <- outer(c(-1, 1), p_breaks) %>%
-      as.vector() %>%
+    p_labels <- outer(c(-1, 1), p_breaks) |>
+      as.vector() |>
       as.character()
-    p_breaks <- outer(c(-1, 1), -log10(p_breaks)) %>% as.vector()
+    p_breaks <- outer(c(-1, 1), -log10(p_breaks)) |> as.vector()
     p_labels <- p_labels[order(p_breaks)]
     p_breaks <- sort(p_breaks)
   } else {

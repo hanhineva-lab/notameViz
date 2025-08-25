@@ -54,13 +54,13 @@ plot_dendrogram <- function(object, all_features = FALSE,
   assay <- pcaMethods::prep(t(assay(object, from)), center = center, 
                             scale = scale)
 
-  d_data <- stats::dist(assay, method = dist_method) %>%
-    stats::hclust(method = clust_method) %>%
-    stats::as.dendrogram() %>%
+  d_data <- stats::dist(assay, method = dist_method) |>
+    stats::hclust(method = clust_method) |>
+    stats::as.dendrogram() |>
     ggdendro::dendro_data()
 
-  labels <- ggdendro::label(d_data) %>%
-    dplyr::mutate(label = .data$label) %>%
+  labels <- ggdendro::label(d_data) |>
+    dplyr::mutate(label = .data$label) |>
     dplyr::left_join(colData(object)[c("Sample_ID", color)], 
                      by = c("label" = "Sample_ID"), copy = TRUE)
   labels[, color] <- as.factor(labels[, color])
@@ -149,9 +149,9 @@ plot_sample_heatmap <- function(object, all_features = FALSE,
   hc_order <- hc$labels[hc$order]
 
   # From wide to long format for ggplot
-  distances_df <- as.matrix(distances) %>%
-    as.data.frame() %>%
-    tibble::rownames_to_column("X") %>%
+  distances_df <- as.matrix(distances) |>
+    as.data.frame() |>
+    tibble::rownames_to_column("X") |>
     tidyr::gather("Y", "Distance", -"X")
   # Set the correct order given by hclust
   distances_df$X <- factor(distances_df$X, levels = hc_order, ordered = TRUE)

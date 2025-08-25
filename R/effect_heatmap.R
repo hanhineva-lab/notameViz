@@ -173,11 +173,11 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
 .hclust_effects <- function(data, x, y, effect, 
                             clust_method, dist_method) {
   # Convert to wide format matrix for clustering
-  data_wide <- data %>%
-    dplyr::select(x, y, effect) %>%
-    tidyr::spread(y, effect) %>%
-    dplyr::filter(!is.na(x)) %>%
-    tibble::column_to_rownames(x) %>%
+  data_wide <- data |>
+    dplyr::select(x, y, effect) |>
+    tidyr::spread(y, effect) |>
+    dplyr::filter(!is.na(x)) |>
+    tibble::column_to_rownames(x) |>
     as.matrix()
 
   data_wide[is.na(data_wide)] <- 0
@@ -200,7 +200,7 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
 .to_lowertri <- function(data, x, y, effect, clustering, 
                          clust_method, dist_method) {
   # Rename columns for simplicity
-  data <- data %>% dplyr::rename("x" = x, "y" = y, "effect" = effect)
+  data <- data |> dplyr::rename("x" = x, "y" = y, "effect" = effect)
 
   dat <- data[c("x", "y", "effect")]
   dat$x <- as.character(dat$x)
@@ -224,8 +224,8 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
 
 
   # Converting data into wide format and tidying data
-  dat_w <- dat %>%
-    tidyr::spread(y, effect) %>%
+  dat_w <- dat |>
+    tidyr::spread(y, effect) |>
     dplyr::filter(!is.na(x))
   # Move column x to rownames
   dat_w <- tibble::column_to_rownames(dat_w, "x")
@@ -267,14 +267,14 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
   combined1 <- dplyr::inner_join(dat_l, data, by = c("x", "y", "effect"))
   combined2 <- dplyr::inner_join(dat_l, data, 
                                  by = c("x" = "y", "y" = "x", "effect"))
-  dat_l <- rbind(combined1, combined2) %>%
+  dat_l <- rbind(combined1, combined2) |>
     dplyr::distinct() # Remove duplicated associations with same x and y
 
   # Setting the factor levels to correctly draw the heatmap
   # This ensures the tiles are plotted in correct order for lower triangular
-  dat_l$x <- dat_l$x %>%
+  dat_l$x <- dat_l$x |>
     factor(levels = rev(rownames(dat_w_whole)))
-  dat_l$y <- dat_l$y %>%
+  dat_l$y <- dat_l$y |>
     factor(levels = rownames(dat_w_whole))
 
   colnames(dat_l)[colnames(dat_l) == "x"] <- x
