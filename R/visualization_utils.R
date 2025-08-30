@@ -205,16 +205,16 @@ save_plot <- function(p, file, ...) {
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' data(example_set, package = "notame")
-#' visualizations(example_set, prefix="figures/example_set", perplexity=5,
-#'                group = "Group", color = "Group", time = "Time", 
-#'                id = "Subject_ID")
+#' save_QC_plots(example_set, prefix="figures/example_set", perplexity=5,
+#'               group = "Group", color = "Group", time = "Time", 
+#'               id = "Subject_ID")
 #' \dontshow{setwd(.old_wd)}
 #'
 #' @export
-visualizations <- function(object, prefix, format = "pdf", perplexity = 30,
-                           merge = FALSE, remove_singles = FALSE, group = NULL, 
-                           time = NULL, id = NULL, color = NULL,
-                           assay.type = NULL) {
+save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
+                          merge = FALSE, remove_singles = FALSE, group = NULL, 
+                          time = NULL, id = NULL, color = NULL,
+                          assay.type = NULL) {
   file_names <- ""
   from <- .get_from_name(object, assay.type)
   object <- .check_object(object, pheno_QC = TRUE,
