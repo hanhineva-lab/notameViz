@@ -1,6 +1,6 @@
 context("Testing plotting and saving functions")
 
-data(example_set, package = "notame")
+data(toy_notame_set, package = "notame")
 
 # Testing save_plot helper function ----
 test_that("Recursive folder creation works", {
@@ -48,65 +48,65 @@ test_that("Giving invalid file format throws error", {
 # Testing save functions ----
 
 test_that("Subject line plots are saved without title", {
-  test_plot_saving_helper(example_set, save_subject_line_plots, title = NULL, 
+  test_plot_saving_helper(toy_notame_set, save_subject_line_plots, title = NULL, 
                           func_args = c(x = "Time", id = "Subject_ID", 
                                         color = "Group"))
 })
 
 test_that("Subject line plot naming works", {
-  test_plot_saving_helper(example_set, save_subject_line_plots, 
+  test_plot_saving_helper(toy_notame_set, save_subject_line_plots, 
                           title = "Metabolite_name",   
                           func_args = c(x = "Time", id = "Subject_ID"))
 })
 
 test_that("Group boxplots are saved without title", {
-  test_plot_saving_helper(example_set, save_group_boxplots, title = NULL,
+  test_plot_saving_helper(toy_notame_set, save_group_boxplots, title = NULL,
                           func_args = c(x= "Group", color = "Group"))
 })
 
 test_that("Group boxplot naming works", {
-  test_plot_saving_helper(example_set, save_group_boxplots, 
+  test_plot_saving_helper(toy_notame_set, save_group_boxplots, 
                           title = "Feature_ID", 
                           func_args = c(x = "Group", color = "Group"))
 })
 
 test_that("Beeswarm plots are saved without title", {
-  test_plot_saving_helper(example_set, save_beeswarm_plots, title = NULL,
+  test_plot_saving_helper(toy_notame_set, save_beeswarm_plots, title = NULL,
                           func_args = c(x = "Group", color = "Group"))
 })
 
 test_that("Beeswarm plot naming works", {
-  test_plot_saving_helper(example_set, save_beeswarm_plots,
+  test_plot_saving_helper(toy_notame_set, save_beeswarm_plots,
                           title = "Metabolite_name",
                           func_args = c(x = "Group", color = "Group"))
 })
 
 test_that("Scatter plots are saved without title", {
-  test_plot_saving_helper(example_set, save_scatter_plots, title = NULL,
+  test_plot_saving_helper(toy_notame_set, save_scatter_plots, title = NULL,
                           func_args = c(x = "Injection_order", color = "Group"))
 })
 
 test_that("Scatter plot naming works", {
-  test_plot_saving_helper(example_set, save_scatter_plots, title = "Feature_ID",
+  test_plot_saving_helper(toy_notame_set, save_scatter_plots, title = "Feature_ID",
                           func_args = c(x = "Injection_order", color = "Group"))
 })
 
 test_that("Group lineplots are saved without title", {
-  test_plot_saving_helper(example_set, save_group_lineplots, title = NULL,
+  test_plot_saving_helper(toy_notame_set, save_group_lineplots, title = NULL,
                           func_args = c(x = "Time", group = "Group"))
 })
 
 test_that("Group lineplot naming works", {
-  test_plot_saving_helper(example_set, save_group_lineplots,
+  test_plot_saving_helper(toy_notame_set, save_group_lineplots,
                           title = "Feature_ID",
                           func_args = c(x = "Time", group = "Group"))
 })
 
 test_that("Batch plots work with and without multiple assays", {
   path <- paste0(tempdir(), "\\test\\batch_plots.pdf")
-  ex_set <- example_set
+  ex_set <- toy_notame_set
   names(assays(ex_set)) <- "original"
-  batch_corrected <- example_set
+  batch_corrected <- toy_notame_set
   assay(batch_corrected, "bcorrected") <- assay(batch_corrected)
   
   # Assay not found with one object with a single assay

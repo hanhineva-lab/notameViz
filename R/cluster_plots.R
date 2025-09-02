@@ -25,8 +25,8 @@
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_dendrogram(example_set, color = "Group")
+#' data(toy_notame_set, package = "notame")
+#' plot_dendrogram(toy_notame_set, color = "Group")
 #'
 #' @seealso \code{\link{dist}} \code{\link{hclust}}
 #'
@@ -109,8 +109,8 @@ plot_dendrogram <- function(object, all_features = FALSE,
 #' consist of multiple parts and is harder to modify.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_sample_heatmap(example_set, group = "Group")
+#' data(toy_notame_set, package = "notame")
+#' plot_sample_heatmap(toy_notame_set, group = "Group")
 #'
 #' @seealso \code{\link{dist}} \code{\link{hclust}}
 #'

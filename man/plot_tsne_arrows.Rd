@@ -77,11 +77,11 @@ using the nipals method of \code{\link[pcaMethods]{pca}}, the method can be
 changed to "ppca" if nipals fails.
 }
 \examples{
-data(example_set, package = "notame")
-plot_tsne_arrows(notame::drop_qcs(example_set), perplexity = 10, 
+data(toy_notame_set, package = "notame")
+plot_tsne_arrows(notame::drop_qcs(toy_notame_set), perplexity = 10, 
   color = "Group", time = "Time", subject = "Subject_ID")
 # If the sample size is large, plot groups separately
-plot_tsne_arrows(notame::drop_qcs(example_set), perplexity = 10,
+plot_tsne_arrows(notame::drop_qcs(toy_notame_set), perplexity = 10,
   color = "Group", time = "Time", subject = "Subject_ID") +
     facet_wrap(~Group)
 

@@ -82,13 +82,13 @@ A separate plot is drawn and saved for each feature.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}
-data(example_set, package = "notame")
-save_subject_line_plots(notame::drop_qcs(example_set)[1:10], x = "Time", 
+data(toy_notame_set, package = "notame")
+save_subject_line_plots(notame::drop_qcs(toy_notame_set)[1:10], x = "Time", 
   id = "Subject_ID", file_path = "./subject_line_plots.pdf",
   format = "emf", title = NULL)
 
 # Plot one feature
-save_subject_line_plots(notame::drop_qcs(example_set[1, ]), save = FALSE,
+save_subject_line_plots(notame::drop_qcs(toy_notame_set[1, ]), save = FALSE,
   x = "Time", id = "Subject_ID")
 \dontshow{setwd(.old_wd)}
 

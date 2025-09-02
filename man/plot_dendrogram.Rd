@@ -56,8 +56,8 @@ Draws a dendrogram of a hierarchical clustering applied to the samples of an
 experiment.
 }
 \examples{
-data(example_set, package = "notame")
-plot_dendrogram(example_set, color = "Group")
+data(toy_notame_set, package = "notame")
+plot_dendrogram(toy_notame_set, color = "Group")
 
 }
 \seealso{

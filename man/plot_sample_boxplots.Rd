@@ -48,7 +48,7 @@ in the pheno data. By default, order and fill are both determined by the
 combination of group and time columns.
 }
 \examples{
-data(example_set, package = "notame")
-plot_sample_boxplots(example_set, order_by = "Group", fill_by = "Group")
+data(toy_notame_set, package = "notame")
+plot_sample_boxplots(toy_notame_set, order_by = "Group", fill_by = "Group")
 
 }

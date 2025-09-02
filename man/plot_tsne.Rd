@@ -85,8 +85,8 @@ of \code{\link[pcaMethods]{pca}}, the method can be changed to "ppca" if
 nipals fails.
 }
 \examples{
-data(example_set, package = "notame")
-plot_tsne(example_set, color = "Time", shape = "Group", perplexity = 10)
+data(toy_notame_set, package = "notame")
+plot_tsne(toy_notame_set, color = "Time", shape = "Group", perplexity = 10)
 
 }
 \seealso{

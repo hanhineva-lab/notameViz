@@ -80,8 +80,8 @@ Computes PCA using one of the methods provided in the Bioconductor package
 pcaMethods and plots the two first principal components.
 }
 \examples{
-data(example_set, package = "notame")
-plot_pca(example_set, color = "Injection_order", shape = "Group")
+data(toy_notame_set, package = "notame")
+plot_pca(toy_notame_set, color = "Injection_order", shape = "Group")
 
 }
 \seealso{

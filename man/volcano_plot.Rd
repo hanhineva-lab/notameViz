@@ -119,13 +119,13 @@ A ggplot object.
 Draws a volcano plot of effect size and p-values.
 }
 \examples{
-data(example_set, package = "notame")
+data(toy_notame_set, package = "notame")
 # naturally, this looks messy as there are not enough p-values
-lm_results <- notameStats::perform_lm(notame::drop_qcs(example_set), 
+lm_results <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set), 
   formula_char = "Feature ~ Group")
 volcano_plot(lm_results,
-  x = "GroupB_Estimate",
-  p = "GroupB_P", p_fdr = "GroupB_P_FDR",
+  x = "GroupB.estimate",
+  p = "GroupB.p.value", p_fdr = "GroupB.p.value_FDR",
   label = "Feature_ID",
   fdr_limit = 0.1
 )

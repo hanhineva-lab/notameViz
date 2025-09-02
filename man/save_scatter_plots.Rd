@@ -79,17 +79,17 @@ A separate plot is drawn and saved for each feature.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}
-data(example_set, package = "notame")
+data(toy_notame_set, package = "notame")
 # Against injection order, colored by group
 save_scatter_plots(
-  object = example_set[1:10],
+  object = toy_notame_set[1:10],
   x = "Injection_order",
   color = "Group",
   file_path = "./scatter_plots.pdf",
   format = "pdf"
 )
 # Plot one feature
-save_scatter_plots(example_set[1, ], save = FALSE)
+save_scatter_plots(toy_notame_set[1, ], save = FALSE)
 \dontshow{setwd(.old_wd)}
 
 }

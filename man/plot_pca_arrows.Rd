@@ -72,11 +72,11 @@ Plots changes in PCA space according to time. All the observations of a
 single subject are connected by an arrow ending at the last observation.
 }
 \examples{
-data(example_set, package = "notame")
-plot_pca_arrows(notame::drop_qcs(example_set), color = "Group",
+data(toy_notame_set, package = "notame")
+plot_pca_arrows(notame::drop_qcs(toy_notame_set), color = "Group",
   time = "Time", subject = "Subject_ID")
 # If the sample size is large, plot groups separately
-plot_pca_arrows(notame::drop_qcs(example_set), color = "Group", 
+plot_pca_arrows(notame::drop_qcs(toy_notame_set), color = "Group", 
                 time = "Time", subject = "Subject_ID") +
   facet_wrap(~Group)
 

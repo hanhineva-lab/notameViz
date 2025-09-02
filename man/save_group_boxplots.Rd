@@ -77,21 +77,21 @@ A separate plot is drawn and saved for each feature.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}
-data(example_set, package = "notame")
+data(toy_notame_set, package = "notame")
 # Default boxplots by group
-save_group_boxplots(notame::drop_qcs(example_set)[1:10],
+save_group_boxplots(notame::drop_qcs(toy_notame_set)[1:10],
   file_path = "./group_boxplots.pdf",
   format = "pdf", x = "Group", color = "Group"
 )
 # x and color can be a different variable
-save_group_boxplots(notame::drop_qcs(example_set)[1:10],
+save_group_boxplots(notame::drop_qcs(toy_notame_set)[1:10],
   file_path = "./time_boxplots/",
   format = "emf",
   x = "Time",
   color = "Group"
 )
 # Plot one feature
-save_group_boxplots(notame::drop_qcs(example_set)[1, ], save = FALSE, 
+save_group_boxplots(notame::drop_qcs(toy_notame_set)[1, ], save = FALSE, 
   x = "Group", color = "Group")
 \dontshow{setwd(.old_wd)}
 

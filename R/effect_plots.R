@@ -129,13 +129,13 @@
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
-#' save_subject_line_plots(notame::drop_qcs(example_set)[1:10], x = "Time", 
+#' data(toy_notame_set, package = "notame")
+#' save_subject_line_plots(notame::drop_qcs(toy_notame_set)[1:10], x = "Time", 
 #'   id = "Subject_ID", file_path = "./subject_line_plots.pdf",
 #'   format = "emf", title = NULL)
 #'
 #' # Plot one feature
-#' save_subject_line_plots(notame::drop_qcs(example_set[1, ]), save = FALSE,
+#' save_subject_line_plots(notame::drop_qcs(toy_notame_set[1, ]), save = FALSE,
 #'   x = "Time", id = "Subject_ID")
 #' \dontshow{setwd(.old_wd)}
 #'
@@ -246,21 +246,21 @@ save_subject_line_plots <- function(object, all_features = FALSE, save = TRUE,
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # Default boxplots by group
-#' save_group_boxplots(notame::drop_qcs(example_set)[1:10],
+#' save_group_boxplots(notame::drop_qcs(toy_notame_set)[1:10],
 #'   file_path = "./group_boxplots.pdf",
 #'   format = "pdf", x = "Group", color = "Group"
 #' )
 #' # x and color can be a different variable
-#' save_group_boxplots(notame::drop_qcs(example_set)[1:10],
+#' save_group_boxplots(notame::drop_qcs(toy_notame_set)[1:10],
 #'   file_path = "./time_boxplots/",
 #'   format = "emf",
 #'   x = "Time",
 #'   color = "Group"
 #' )
 #' # Plot one feature
-#' save_group_boxplots(notame::drop_qcs(example_set)[1, ], save = FALSE, 
+#' save_group_boxplots(notame::drop_qcs(toy_notame_set)[1, ], save = FALSE, 
 #'   x = "Group", color = "Group")
 #' \dontshow{setwd(.old_wd)}
 #' 
@@ -353,14 +353,14 @@ save_group_boxplots <- function(object, all_features = FALSE, save = TRUE,
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # Default beeswarms by group
-#' save_beeswarm_plots(notame::drop_qcs(example_set)[1:10],
+#' save_beeswarm_plots(notame::drop_qcs(toy_notame_set)[1:10],
 #'   file_path = "./beeswarm_plots.pdf",
 #'   format = "pdf", x = "Group", color = "Group"
 #' )
 #' # x and color can be a different variable
-#' save_beeswarm_plots(notame::drop_qcs(example_set)[1:10],
+#' save_beeswarm_plots(notame::drop_qcs(toy_notame_set)[1:10],
 #'   file_path = "./beeswarm_plots/",
 #'   format = "png",
 #'   x = "Time",
@@ -368,7 +368,7 @@ save_group_boxplots <- function(object, all_features = FALSE, save = TRUE,
 #' )
 #' 
 #' # Plot one feature
-#' save_beeswarm_plots(notame::drop_qcs(example_set)[1, ], save = FALSE, 
+#' save_beeswarm_plots(notame::drop_qcs(toy_notame_set)[1, ], save = FALSE, 
 #' x = "Group", color = "Group")
 #' \dontshow{setwd(.old_wd)}
 #'
@@ -466,17 +466,17 @@ save_beeswarm_plots <- function(object, all_features = FALSE, save = TRUE,
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # Against injection order, colored by group
 #' save_scatter_plots(
-#'   object = example_set[1:10],
+#'   object = toy_notame_set[1:10],
 #'   x = "Injection_order",
 #'   color = "Group",
 #'   file_path = "./scatter_plots.pdf",
 #'   format = "pdf"
 #' )
 #' # Plot one feature
-#' save_scatter_plots(example_set[1, ], save = FALSE)
+#' save_scatter_plots(toy_notame_set[1, ], save = FALSE)
 #' \dontshow{setwd(.old_wd)}
 #'
 #' @export
@@ -573,17 +573,17 @@ save_scatter_plots <- function(object, x = "Injection_order", save = TRUE,
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
-#' save_group_lineplots(notame::drop_qcs(example_set)[1:10],
+#' data(toy_notame_set, package = "notame")
+#' save_group_lineplots(notame::drop_qcs(toy_notame_set)[1:10],
 #'   file_path = "./group_line_plots.pdf",
 #'   format = "pdf", x = "Time", group = "Group"
 #' )
-#' save_group_lineplots(notame::drop_qcs(example_set)[1:10],
+#' save_group_lineplots(notame::drop_qcs(toy_notame_set)[1:10],
 #'   file_path = "./group_line_plots/",
 #'   format = "png", x = "Time", group = "Group"
 #' )
 #' # Plot one feature
-#' save_group_lineplots(notame::drop_qcs(example_set[1, ]), save = FALSE,
+#' save_group_lineplots(notame::drop_qcs(toy_notame_set[1, ]), save = FALSE,
 #' x = "Time", group = "Group")
 #' \dontshow{setwd(.old_wd)}
 #'
@@ -648,4 +648,69 @@ save_group_lineplots <- function(object, all_features = FALSE, save = TRUE,
     return(.create_feature_plot_list(object, line_fun))
     log_text("Created a list of line plots with mean line")
   }
+}
+
+#' Plot points in PLS space
+#'
+#' A helper function for \code{mixomics_pls} and \code{mixomics_spls}.
+#'
+#' @param model a PLS or sPLS model
+#' @param Y the Y matrix
+#' @param y the name of the y variable
+#' @param title plot title
+#' @export
+plot_mixomics_pls <- function(model, Y, y, title) {
+  if (ncol(model$variates$X) == 1) {
+    stop("Can't plot a single component")
+  }
+  # Extract scores and add y variable
+  scores <- data.frame(model$variates$X[, seq_len(2)])
+  colnames(scores) <- c("X1", "X2")
+  scores[, y[1]] <- Y[, 1]
+  # Explained variance as percentage
+  var_exp <- 100 * model$prop_expl_var$X[seq_len(2)] |> round(digits = 3)
+  p <- ggplot(scores, aes(x = .data[["X1"]], y = .data[["X2"]], 
+                          color = .data[[y]])) +
+    geom_point() +
+    getOption("notame.color_scale_con") +
+    theme_minimal() +
+    labs(x = paste("X1:", var_exp[1], "%"),
+         y = paste("X2:", var_exp[2], "%"),
+         title = title)
+  p
+}
+
+#' Plot PLS performance
+#'
+#' A helper function for \code{mixomics_pls} and \code{mixomics_spls}.
+#'
+#' @param model a PLS or sPLS model
+#' @param ncomp number of X components
+#' @export
+plot_mixomics_perf <- function(perf_pls, ncomp){  
+  # Plot Mean Square Error
+  p1 <- ggplot(data.frame(ncomp = seq_len(ncomp),
+                          MSEP = as.vector(perf_pls$measure$MSEP$summary$mean)),
+               aes(x = ncomp, y = .data$MSEP)) +
+    geom_line() +
+    labs(color = NULL, title = "Mean Square Error") +
+    theme_bw() +
+    scale_x_continuous(breaks = seq_len(ncomp)) +
+    theme(panel.grid.minor.x = element_blank())
+
+  # Plot R2 and Q2
+  plot_data <- data.frame(R2 = as.vector(perf_pls$measure$R2$summary$mean),
+                          Q2 = as.vector(perf_pls$measure$Q2$summary$mean),
+                          ncomp = seq_len(ncomp)) |>
+    tidyr::gather(key = "key", value = "value", -ncomp)
+
+  p2 <- ggplot(plot_data, aes(x = ncomp, y = .data$value, color = .data$key)) +
+    geom_line() +
+    labs(color = NULL, title = "R2 and Q2") +
+    theme_bw() +
+    getOption("notame.color_scale_dis") +
+    scale_x_continuous(breaks = seq_len(ncomp)) +
+    theme(panel.grid.minor.x = element_blank())
+  
+  p <- cowplot::plot_grid(p1, p2, nrow = 1)
 }

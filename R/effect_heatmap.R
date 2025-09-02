@@ -72,10 +72,10 @@
 #' \code{\link{hclust}} for hierarchical clustering.
 #'
 #' @examples
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # Compute correlations between variables
-#' correlations <- notameStats::perform_correlation_tests(example_set,
-#'   x = rownames(example_set),
+#' correlations <- notameStats::perform_correlation_tests(toy_notame_set,
+#'   x = rownames(toy_notame_set),
 #'   duplicates = TRUE
 #' )
 #'

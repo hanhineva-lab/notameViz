@@ -92,17 +92,17 @@ A separate plot is drawn for each feature.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}
-data(example_set, package = "notame")
-save_group_lineplots(notame::drop_qcs(example_set)[1:10],
+data(toy_notame_set, package = "notame")
+save_group_lineplots(notame::drop_qcs(toy_notame_set)[1:10],
   file_path = "./group_line_plots.pdf",
   format = "pdf", x = "Time", group = "Group"
 )
-save_group_lineplots(notame::drop_qcs(example_set)[1:10],
+save_group_lineplots(notame::drop_qcs(toy_notame_set)[1:10],
   file_path = "./group_line_plots/",
   format = "png", x = "Time", group = "Group"
 )
 # Plot one feature
-save_group_lineplots(notame::drop_qcs(example_set[1, ]), save = FALSE,
+save_group_lineplots(notame::drop_qcs(toy_notame_set[1, ]), save = FALSE,
 x = "Time", group = "Group")
 \dontshow{setwd(.old_wd)}
 

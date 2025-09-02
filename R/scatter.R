@@ -89,8 +89,8 @@
 #' consist of multiple parts and is harder to modify.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_pca(example_set, color = "Injection_order", shape = "Group")
+#' data(toy_notame_set, package = "notame")
+#' plot_pca(toy_notame_set, color = "Injection_order", shape = "Group")
 #'
 #' @seealso \code{\link[pcaMethods]{pca}}
 #'
@@ -166,8 +166,8 @@ plot_pca <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' consist of multiple parts and is harder to modify.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_tsne(example_set, color = "Time", shape = "Group", perplexity = 10)
+#' data(toy_notame_set, package = "notame")
+#' plot_tsne(toy_notame_set, color = "Time", shape = "Group", perplexity = 10)
 #'
 #' @seealso \code{\link[Rtsne]{Rtsne}}
 #'
@@ -323,8 +323,8 @@ plot_tsne <- function(object, all_features = FALSE, center = TRUE,
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_pca_loadings(example_set, n_features = c(2, 4))
+#' data(toy_notame_set, package = "notame")
+#' plot_pca_loadings(toy_notame_set, n_features = c(2, 4))
 #'
 #' @seealso \code{\link[pcaMethods]{pca}}
 #'
@@ -402,8 +402,8 @@ plot_pca_loadings <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_pca_hexbin(example_set)
+#' data(toy_notame_set, package = "notame")
+#' plot_pca_hexbin(toy_notame_set)
 #'
 #' @seealso \code{\link[pcaMethods]{pca}}
 #'
@@ -460,8 +460,8 @@ plot_pca_hexbin <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_tsne_hexbin(example_set, perplexity = 10)
+#' data(toy_notame_set, package = "notame")
+#' plot_tsne_hexbin(toy_notame_set, perplexity = 10)
 #'
 #' @seealso \code{\link[Rtsne]{Rtsne}}
 #'
@@ -556,11 +556,11 @@ plot_tsne_hexbin <- function(object, all_features = FALSE, center = TRUE,
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_pca_arrows(notame::drop_qcs(example_set), color = "Group",
+#' data(toy_notame_set, package = "notame")
+#' plot_pca_arrows(notame::drop_qcs(toy_notame_set), color = "Group",
 #'   time = "Time", subject = "Subject_ID")
 #' # If the sample size is large, plot groups separately
-#' plot_pca_arrows(notame::drop_qcs(example_set), color = "Group", 
+#' plot_pca_arrows(notame::drop_qcs(toy_notame_set), color = "Group", 
 #'                 time = "Time", subject = "Subject_ID") +
 #'   facet_wrap(~Group)
 #'
@@ -631,11 +631,11 @@ plot_pca_arrows <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' consist of multiple parts and is harder to modify.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_tsne_arrows(notame::drop_qcs(example_set), perplexity = 10, 
+#' data(toy_notame_set, package = "notame")
+#' plot_tsne_arrows(notame::drop_qcs(toy_notame_set), perplexity = 10, 
 #'   color = "Group", time = "Time", subject = "Subject_ID")
 #' # If the sample size is large, plot groups separately
-#' plot_tsne_arrows(notame::drop_qcs(example_set), perplexity = 10,
+#' plot_tsne_arrows(notame::drop_qcs(toy_notame_set), perplexity = 10,
 #'   color = "Group", time = "Time", subject = "Subject_ID") +
 #'     facet_wrap(~Group)
 #'
@@ -711,13 +711,13 @@ minus_log10 <- scales::trans_new("minus_log10",
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # naturally, this looks messy as there are not enough p-values
-#' lm_results <- notameStats::perform_lm(notame::drop_qcs(example_set), 
+#' lm_results <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set), 
 #'   formula_char = "Feature ~ Group")
 #' volcano_plot(lm_results,
-#'   x = "GroupB_Estimate",
-#'   p = "GroupB_P", p_fdr = "GroupB_P_FDR",
+#'   x = "GroupB.estimate",
+#'   p = "GroupB.p.value", p_fdr = "GroupB.p.value_FDR",
 #'   label = "Feature_ID",
 #'   fdr_limit = 0.1
 #' )
@@ -888,22 +888,22 @@ setMethod("volcano_plot", c(object = "SummarizedExperiment"),
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # naturally, this looks messy as there are not enough p-values
-#' lm_results <- notameStats::perform_lm(notame::drop_qcs(example_set), 
+#' lm_results <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set), 
 #'   formula_char = "Feature ~ Group")
-#' lm_data <- dplyr::left_join(as.data.frame(rowData(example_set)), lm_results)
+#' lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), lm_results)
 #' # Traditional Manhattan plot from data frame
 #' manhattan_plot(lm_data,
 #'   x = "Average_Mz",
-#'   p = "GroupB_P", p_fdr = "GroupB_P_FDR",
+#'   p = "GroupB.p.value", p_fdr = "GroupB.p.value_FDR",
 #'   fdr_limit = 0.1
 #' )
 #' # Directed Manhattan plot from SummarizedExperiment
-#' with_results <- notame::join_rowData(example_set, lm_results)
+#' with_results <- notame::join_rowData(toy_notame_set, lm_results)
 #' manhattan_plot(with_results,
-#'   x = "Average_Mz", effect = "GroupB_Estimate",
-#'   p = "GroupB_P", p_fdr = "GroupB_P_FDR",
+#'   x = "Average_Mz", effect = "GroupB.estimate",
+#'   p = "GroupB.p.value", p_fdr = "GroupB.p.value_FDR",
 #'   fdr_limit = 0.1
 #' )
 #'
@@ -1053,19 +1053,19 @@ setMethod("manhattan_plot", c(object = "SummarizedExperiment"),
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # Compute results from a linear model
-#' lm_results <- notameStats::perform_lm(example_set,
+#' lm_results <- notameStats::perform_lm(toy_notame_set,
 #'   formula_char = "Feature ~ Group")
-#' with_results <- notame::join_rowData(example_set, lm_results)
+#' with_results <- notame::join_rowData(toy_notame_set, lm_results)
 #'
 #' # Plot from the SummarizedExperiment object
 #' # automatically facet by analytical mode in variable Split
-#' mz_rt_plot(with_results, p_col = "GroupB_P", color = "GroupB_Estimate")
+#' mz_rt_plot(with_results, p_col = "GroupB.p.value", color = "GroupB.estimate")
 #'
 #' # Plot the results from the results dataframe
-#' lm_data <- dplyr::left_join(as.data.frame(rowData(example_set)), lm_results)
-#' mz_rt_plot(lm_data, p_col = "GroupB_P", color = "GroupB_Estimate")
+#' lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), lm_results)
+#' mz_rt_plot(lm_data, p_col = "GroupB.p.value", color = "GroupB.estimate")
 #'
 #' @export
 setGeneric("mz_rt_plot", signature = "object",

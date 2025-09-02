@@ -99,22 +99,22 @@ the effect, so part of the points will "drop" from the p = 1 (-log10(p) = 0)
 line. This results in a so-called directed Manhattan plot.
 }
 \examples{
-data(example_set, package = "notame")
+data(toy_notame_set, package = "notame")
 # naturally, this looks messy as there are not enough p-values
-lm_results <- notameStats::perform_lm(notame::drop_qcs(example_set), 
+lm_results <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set), 
   formula_char = "Feature ~ Group")
-lm_data <- dplyr::left_join(as.data.frame(rowData(example_set)), lm_results)
+lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), lm_results)
 # Traditional Manhattan plot from data frame
 manhattan_plot(lm_data,
   x = "Average_Mz",
-  p = "GroupB_P", p_fdr = "GroupB_P_FDR",
+  p = "GroupB.p.value", p_fdr = "GroupB.p.value_FDR",
   fdr_limit = 0.1
 )
 # Directed Manhattan plot from SummarizedExperiment
-with_results <- notame::join_rowData(example_set, lm_results)
+with_results <- notame::join_rowData(toy_notame_set, lm_results)
 manhattan_plot(with_results,
-  x = "Average_Mz", effect = "GroupB_Estimate",
-  p = "GroupB_P", p_fdr = "GroupB_P_FDR",
+  x = "Average_Mz", effect = "GroupB.estimate",
+  p = "GroupB.p.value", p_fdr = "GroupB.p.value_FDR",
   fdr_limit = 0.1
 )
 

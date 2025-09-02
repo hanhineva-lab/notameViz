@@ -58,8 +58,8 @@ where the value of the coloring variable is summarised for each bin, by
 default as the mean of the values inside the bin.
 }
 \examples{
-data(example_set, package = "notame")
-plot_pca_hexbin(example_set)
+data(toy_notame_set, package = "notame")
+plot_pca_hexbin(toy_notame_set)
 
 }
 \seealso{

@@ -52,10 +52,11 @@ A ggplot object.
 Plot density of distances between samples in QC samples and actual samples.
 }
 \examples{
-data(example_set, package = "notame")
-plot_dist_density(example_set)
+data(toy_notame_set, package = "notame")
+plot_dist_density(toy_notame_set)
 # Drift correction tightens QCs together
-plot_dist_density(notame::correct_drift(example_set))
+plot_dist_density(notame::correct_drift(toy_notame_set), 
+                  assay.type = "corrected")
 
 }
 \seealso{

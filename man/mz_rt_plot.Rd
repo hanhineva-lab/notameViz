@@ -84,18 +84,18 @@ represents a feature. The plot has retention time on x-axis, m/z on y-axis
 and the size of the points is scaled based on p-value
 }
 \examples{
-data(example_set, package = "notame")
+data(toy_notame_set, package = "notame")
 # Compute results from a linear model
-lm_results <- notameStats::perform_lm(example_set,
+lm_results <- notameStats::perform_lm(toy_notame_set,
   formula_char = "Feature ~ Group")
-with_results <- notame::join_rowData(example_set, lm_results)
+with_results <- notame::join_rowData(toy_notame_set, lm_results)
 
 # Plot from the SummarizedExperiment object
 # automatically facet by analytical mode in variable Split
-mz_rt_plot(with_results, p_col = "GroupB_P", color = "GroupB_Estimate")
+mz_rt_plot(with_results, p_col = "GroupB.p.value", color = "GroupB.estimate")
 
 # Plot the results from the results dataframe
-lm_data <- dplyr::left_join(as.data.frame(rowData(example_set)), lm_results)
-mz_rt_plot(lm_data, p_col = "GroupB_P", color = "GroupB_Estimate")
+lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), lm_results)
+mz_rt_plot(lm_data, p_col = "GroupB.p.value", color = "GroupB.estimate")
 
 }

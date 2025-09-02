@@ -28,10 +28,10 @@ Draws histograms of p-values with expected uniform distribution represented
 by a dashed red line.
 }
 \examples{
-data(example_set, package = "notame")
-lm_sample <- notameStats::perform_lm(notame::drop_qcs(example_set),
+data(toy_notame_set, package = "notame")
+lm_sample <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set),
   "Feature ~ Injection_order")
-p_values <- list("Biological samples" = lm_sample$Injection_order_P)
+p_values <- list("Biological samples" = lm_sample$Injection_order.p.value)
 plot_p_histogram(p_values)
 
 }

@@ -26,8 +26,8 @@ by injection order alone. The expected uniform distribution is represented
 by a dashed red line.
 }
 \examples{
-data(example_set, package = "notame")
-plot_injection_lm(example_set)
+data(toy_notame_set, package = "notame")
+plot_injection_lm(toy_notame_set)
 
 }
 \seealso{

@@ -63,8 +63,8 @@ of \code{\link[pcaMethods]{pca}}, the method can be changed to "ppca" if
 nipals fails.
 }
 \examples{
-data(example_set, package = "notame")
-plot_tsne_hexbin(example_set, perplexity = 10)
+data(toy_notame_set, package = "notame")
+plot_tsne_hexbin(toy_notame_set, perplexity = 10)
 
 }
 \seealso{

@@ -32,7 +32,7 @@ A ggplot object.
 Plots distribution of each quality metric, and a distribution of the flags.
 }
 \examples{
-data(example_set, package = "notame")
-plot_quality(example_set)
+data(toy_notame_set, package = "notame")
+plot_quality(toy_notame_set)
 
 }

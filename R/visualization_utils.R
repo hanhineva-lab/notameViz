@@ -11,9 +11,9 @@
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #'
-#' p <- plot_sample_heatmap(example_set, group = "Group")
+#' p <- plot_sample_heatmap(toy_notame_set, group = "Group")
 #'
 #' save_plot(p, file = "test.pdf")
 #' \dontshow{setwd(.old_wd)}
@@ -204,8 +204,8 @@ save_plot <- function(p, file, ...) {
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
-#' save_QC_plots(example_set, prefix="figures/example_set", perplexity=5,
+#' data(toy_notame_set, package = "notame")
+#' save_QC_plots(toy_notame_set, prefix="figures/toy_notame_set", perplexity=5,
 #'               group = "Group", color = "Group", time = "Time", 
 #'               id = "Subject_ID")
 #' \dontshow{setwd(.old_wd)}

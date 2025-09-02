@@ -3,7 +3,7 @@
 #' @import BiocGenerics
 #' @import methods
 #' @import SummarizedExperiment
-#' @importFrom notame drop_flagged drop_qcs flag quality assess_quality combined_data flag merge_objects mark_nas "flag<-" flag_quality log_text init_log finish_log join_rowData citations
+#' @importFrom notame drop_flagged drop_qcs flag quality assess_quality combined_data flag merge_notame_sets mark_nas "flag<-" flag_quality log_text init_log finish_log join_rowData citations
 NULL
 
 utils::globalVariables(c('.'))
@@ -15,3 +15,4 @@ utils::globalVariables(c('.'))
 .check_feature_data <- notame:::.check_feature_data
 .find_mz_rt_cols <- notame:::.find_mz_rt_cols
 finite_mean <- notame:::finite_mean
+finite_sd <- notame:::finite_sd

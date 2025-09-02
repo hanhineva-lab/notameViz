@@ -22,9 +22,9 @@ If an error occurs with the plot, an empty file is created.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}
-data(example_set, package = "notame")
+data(toy_notame_set, package = "notame")
 
-p <- plot_sample_heatmap(example_set, group = "Group")
+p <- plot_sample_heatmap(toy_notame_set, group = "Group")
 
 save_plot(p, file = "test.pdf")
 \dontshow{setwd(.old_wd)}

@@ -39,10 +39,11 @@
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_dist_density(example_set)
+#' data(toy_notame_set, package = "notame")
+#' plot_dist_density(toy_notame_set)
 #' # Drift correction tightens QCs together
-#' plot_dist_density(notame::correct_drift(example_set))
+#' plot_dist_density(notame::correct_drift(toy_notame_set), 
+#'                   assay.type = "corrected")
 #'
 #' @seealso \code{\link[stats]{dist}}
 #'
@@ -100,8 +101,8 @@ plot_dist_density <- function(object, all_features = FALSE,
 #' @seealso \code{\link{plot_p_histogram}}
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_injection_lm(example_set)
+#' data(toy_notame_set, package = "notame")
+#' plot_injection_lm(toy_notame_set)
 #'
 #' @export
 plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
@@ -126,9 +127,9 @@ plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
                                    assay.type = from)
 
   # Only interested in the p_values
-  p_values <- list("All samples" = lm_all$Injection_order_P,
-                   "Biological samples" = lm_sample$Injection_order_P,
-                   "QC samples" = lm_qc$Injection_order_P)
+  p_values <- list("All samples" = lm_all$Injection_order.p.value,
+                   "Biological samples" = lm_sample$Injection_order.p.value,
+                   "QC samples" = lm_qc$Injection_order.p.value)
   # Plotting
   plot_p_histogram(p_values)
 }
@@ -148,10 +149,10 @@ plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
 #' @param x_label the x-axis label
 #'
 #' @examples 
-#' data(example_set, package = "notame")
-#' lm_sample <- notameStats::perform_lm(notame::drop_qcs(example_set),
+#' data(toy_notame_set, package = "notame")
+#' lm_sample <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set),
 #'   "Feature ~ Injection_order")
-#' p_values <- list("Biological samples" = lm_sample$Injection_order_P)
+#' p_values <- list("Biological samples" = lm_sample$Injection_order.p.value)
 #' plot_p_histogram(p_values)
 #'
 #' @return If combine = TRUE, a ggplot object. Otherwise a list of ggplot 
@@ -210,8 +211,8 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE,
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_quality(example_set)
+#' data(toy_notame_set, package = "notame")
+#' plot_quality(toy_notame_set)
 #'
 #' @export
 plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE,
@@ -277,8 +278,8 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE,
 #' @return A ggplot object.
 #'
 #' @examples
-#' data(example_set, package = "notame")
-#' plot_sample_boxplots(example_set, order_by = "Group", fill_by = "Group")
+#' data(toy_notame_set, package = "notame")
+#' plot_sample_boxplots(toy_notame_set, order_by = "Group", fill_by = "Group")
 #'
 #' @export
 plot_sample_boxplots <- function(object, all_features = FALSE, order_by, 
@@ -377,14 +378,14 @@ plot_sample_boxplots <- function(object, all_features = FALSE, order_by,
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
-#' data(example_set, package = "notame")
+#' data(toy_notame_set, package = "notame")
 #' # Batch correction
-#' batch_corrected <- batchCorr::normalizeBatches(example_set, assay.type = 1,
+#' batch_corrected <- batchCorr::normalizeBatches(toy_notame_set, assay.type = 1,
 #'   batches = "Batch", sampleGroup = "Group", refGroup = "QC", 
 #'   population = "all", name = "normalized")
 #' # Plots of each feature
 #' save_batch_plots(
-#'   orig = example_set[1:10], corrected = batch_corrected[1:10],
+#'   orig = toy_notame_set[1:10], corrected = batch_corrected[1:10],
 #'   file = "batch_plots.pdf", assay.type2 = "normalized"
 #' )
 #' \dontshow{setwd(.old_wd)}
@@ -473,4 +474,257 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
     plot(p)
   }
   grDevices::dev.off()
+}
+
+#' Save drift correction plots
+#'
+#' Plots the data before and after drift correction, with the regression line 
+#' drawn with the original data. If the drift correction was done on 
+#' log-transformed data, then plots of both the original and log-transformed 
+#' data before and after correction are drawn.
+#' The plot shows 2 standard deviation spread for both QC samples and regular 
+#' samples.
+#'
+#' @param object a \code{
+#' \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+#' object
+#' @param file path to the PDF file where the plots should be saved
+#' @param log_transform logical, was the drift correction done on log-
+#' transformed data?
+#' @param width,height width and height of the plots in inches
+#' @param color character, name of the column used for coloring the points
+#' @param shape character, name of the column used for shape
+#' @param color_scale the color scale as returned by a ggplot function
+#' @param shape_scale the shape scale as returned by a ggplot function
+#' @param assay.orig character, name of assay with abundances before correction
+#' @param assay.dc character, name of assay after correction
+#' @param assay.pred character, name of assay with interpolated fit of spline
+#' @param color_scale the color scale as returned by a ggplot function
+#' @param shape_scale the shape scale as returned by a ggplot function
+
+#' @return None, the function is invoked for its plot-saving side effect.
+#'
+#' @details By default, the column used for color is also used for shape.
+#'
+#' @seealso \code{\link{correct_drift}}
+#'
+#' @examples
+#' data(toy_notame_set, package = "notame")
+#' \dontshow{.old_wd <- setwd(tempdir())}
+#' dc <- notame::correct_drift(toy_notame_set, assay.type = 1,
+#'                             name = "corrected", 
+#' name_predicted = "predicted")
+#' save_dc_plots(dc[1],
+#'   file = "drift_plots.pdf",
+#'   assay.orig = 1, assay.dc = "corrected", assay.pred = "predicted"
+#' )
+#' \dontshow{setwd(.old_wd)}
+#' @export
+save_dc_plots <- function(object, file, log_transform = TRUE, 
+                          width = 16, height = 8,
+                          color = "QC", shape = color, 
+                          color_scale = getOption("notame.color_scale_dis"),
+                          shape_scale = scale_shape_manual(values = c(15, 16)),
+                          assay.orig, assay.dc = "corrected", 
+                          assay.pred = "drift_pred"){
+  # Create a helper function for plotting
+  dc_plot_helper <- function(data, fname, title = NULL) {
+    p <- ggplot(data = data, mapping = aes(x = .data[["Injection_order"]], 
+                y = .data[[fname]])) +
+      theme_bw() +
+      theme(panel.grid = element_blank()) +
+      color_scale +
+      shape_scale +
+      labs(title = title)
+
+    mean_qc <- finite_mean(data[data$QC == "QC", fname])
+    sd_qc <- finite_sd(data[data$QC == "QC", fname])
+    mean_sample <- finite_mean(data[data$QC != "QC", fname])
+    sd_sample <- finite_sd(data[data$QC != "QC", fname])
+
+    y_intercepts <- sort(c(
+      "-2 SD (Sample)" = mean_sample - 2 * sd_sample,
+      "-2 SD (QC)" = mean_qc - 2 * sd_qc,
+      "+2 SD (QC)" = mean_qc + 2 * sd_qc,
+      "+2 SD (Sample)" = mean_sample + 2 * sd_sample
+    ))
+
+    for (yint in y_intercepts) {
+      p <- p + geom_hline(yintercept = yint, color = "grey", 
+                          linetype = "dashed")
+    }
+    p +
+      scale_y_continuous(sec.axis = sec_axis(~., breaks = y_intercepts, 
+                                             labels = names(y_intercepts))) +
+      geom_point(data = data, mapping = aes(color = .data[[color]], 
+                                            shape = .data[[shape]]))
+  }
+  
+  assay(object, "log_orig") <- log(assay(object, assay.orig))
+  assay(object, "log_dc") <- log(assay(object, assay.dc))
+  
+  orig_data_log <- combined_data(object, assay.type = "log_orig")
+  dc_data_log <- combined_data(object, assay.type = "log_dc")
+  orig_data <- combined_data(object, assay.type = assay.orig)
+  dc_data <- combined_data(object, assay.type = assay.dc)
+  predictions <- as.data.frame(t(assay(object, assay.pred)))
+  predictions$Injection_order <- orig_data$Injection_order
+
+  grDevices::pdf(file, width = width, height = height)
+
+  for (fname in rownames(object)) {
+    p2 <- dc_plot_helper(data = dc_data, fname = fname, title = "After")
+
+    if (log_transform) {
+      p1 <- dc_plot_helper(data = orig_data, fname = fname, title = "Before")
+      p3 <- dc_plot_helper(data = orig_data_log, fname = fname,
+                           title = "Drift correction in log space") +
+        geom_line(data = predictions, color = "grey")
+
+      p4 <- dc_plot_helper(data = dc_data_log, fname = fname,
+                           title = "Corrected data in log space")
+      p <- cowplot::plot_grid(p1, p3, p2, p4, nrow = 2)
+    } else {
+      p1 <- dc_plot_helper(data = orig_data, fname = fname,
+                           title = "Before (original values)") +
+        geom_line(data = predictions, color = "grey")
+      p <- cowplot::plot_grid(p1, p2, nrow = 2)
+    }
+    plot(p)
+  }
+  grDevices::dev.off()
+  log_text(paste("\nSaved drift correction plots to:", file))
+}
+
+.plot_features <- function(feature_data, features, mpa_col, 
+                           mz_col, rt_col, rt_window) {
+
+  p1 <- ggplot(feature_data, aes(.data[[mz_col]], .data[[mpa_col]])) +
+    geom_point(size = 3, color = "steelblue4") +
+    geom_segment(aes(x = .data[[mz_col]], yend = .data[[mpa_col]], 
+                     xend = .data[[mz_col]]),
+                 y = 0, color = "steelblue4") +
+    ggrepel::geom_label_repel(aes(label = .data[[mz_col]]), 
+                              color = "steelblue4") +
+    theme_minimal() +
+    xlim(0.9 * min(feature_data[, mz_col], na.rm = TRUE),
+         1.15 * max(feature_data[, mz_col], na.rm = FALSE)) +
+    expand_limits(y = 0) +
+    labs(x = "Mass-to-charge ratio", y = "Median Peak Area")
+
+  feature_data$rtmin <- feature_data[, rt_col] - rt_window
+  feature_data$rtmax <- feature_data[, rt_col] + rt_window
+
+  p2 <- ggplot(feature_data, aes(.data[[rt_col]], .data[[mz_col]])) +
+    geom_point(size = 3, color = "steelblue4") +
+    geom_errorbarh(aes(xmin = .data$rtmin, xmax = .data$rtmax), 
+                   color = "steelblue4") +
+    theme_minimal() +
+    labs(x = "Retention time", y = "Mass-to-charge ratio", 
+         title = "Retention time & tolerance")
+
+  plot(p1)
+  plot(p2)
+}
+
+.plot_heatmaps <- function(feature_data, features, mz_col, rt_col) {
+
+  n <- length(features)
+  mz_rt <- data.frame()
+
+  for (i in seq_len(n)) {
+    for (j in seq_len(n)) {
+      mz_rt <- rbind(mz_rt, data.frame(
+        x = feature_data[i, "Feature_ID"],
+        y = feature_data[j, "Feature_ID"],
+        mz_diff = feature_data[i, mz_col] - feature_data[j, mz_col],
+        rt_diff = feature_data[i, rt_col] - feature_data[j, rt_col],
+        stringsAsFactors = FALSE))
+    }
+  }
+
+  mz_ord <- feature_data[, "Feature_ID"][order(feature_data[, mz_col])]
+  mz_rt$x <- factor(mz_rt$x, levels = mz_ord)
+  mz_rt$y <- factor(mz_rt$y, levels = rev(mz_ord))
+
+  p1 <- ggplot(mz_rt, aes(x = .data$x, y = .data$y, fill = .data$mz_diff)) +
+    geom_tile(color = "grey80") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 90, vjust = 1)) +
+    scale_fill_gradient2()
+
+  if (nrow(mz_rt) <= 10) {
+    p1 <- p1 + geom_text(aes(label = round(.data$mz_diff, digits = 2)))
+  }
+
+  plot(p1)
+}
+
+#' Visualize clusters of features
+#'
+#' Draws multiple visualizations of each cluster, creating a separate file for
+#' each cluster.
+#'
+#' @param object a \code{
+#' \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+#' object with clustering metadata
+#' @param min_size the minimum number of features a cluster needs to have to be 
+#' plotted
+#' @param rt_window numeric, the retention time window to use in linking 
+#' features. NOTE you need to use the same unit as in the retention time column
+#' @param n_clust_col character, name of the column that contains the features 
+#' included in cluster, separated by semicolon
+#' @param clust_col character, name of the column that contains the features in 
+#' a cluster
+#' @param mpa_col character, name of column that contains median peak area of 
+#' features
+#' @param mz_col character, name of the column in features that contains
+#' mass-to-charge ratios
+#' @param rt_col character, name of the column in features that contains 
+#' retention times
+#' @param file_path the prefix to the files to be plotted
+#'
+#' @details
+#' Note that the input data has been assigned clusters but has not yet been 
+#' compressed, for example by retaining the feature with the highest median 
+#' peak area.
+#'
+#' @examples
+#' # data(toy_notame_set, package = "notame")
+#' ## The parameters are really weird because example data is imaginary
+#' # clustered <- notame::cluster_features(toy_notame_set, rt_window = 1, 
+#' #                                      corr_thresh = 0.5, d_thresh = 0.6)
+#'
+#* visualise_clusters(clustered, rt_window = 1, file_path = "cluster_plots.pdf")
+#' @export
+visualise_clusters <- function(object, min_size = 3, rt_window = 1 / 60,
+                          n_clust_col = "Cluster_size",
+                          clust_col = "Cluster_features", mpa_col = "MPA",
+                          mz_col = NULL, rt_col = NULL, file_path) {
+                                 
+  if (is.null(mz_col) || is.null(rt_col)) {
+    cols <- .find_mz_rt_cols(rowData(object))
+  }
+  mz_col <- mz_col %||% cols$mz_col
+  rt_col <- rt_col %||% cols$rt_col                                 
+                               
+  data <- rowData(object)[rowData(object)[, n_clust_col] == min_size, ]
+  
+  clusters <- unique(data[, clust_col])
+  for (i in seq_along(clusters)) {
+    if (i %% 100 == 0) {
+      message(i, " / ", length(clusters))
+    }
+    cluster <- clusters[[i]]
+    
+    features <- strsplit(cluster, ";")[[1]]
+
+    feature_data <- data[data[, "Feature_ID"] %in% features, ]
+    cluster_id <- feature_data$Cluster_ID[1]
+    grDevices::pdf(paste0(file_path, cluster_id, ".pdf"), 
+                    width = 10, height = 10)
+    .plot_heatmaps(feature_data, features, mz_col, rt_col)
+    .plot_features(feature_data, features, mpa_col, mz_col, rt_col, rt_window)
+    grDevices::dev.off()
+  }
 }

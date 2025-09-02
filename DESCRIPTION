@@ -56,7 +56,7 @@ Suggests:
     pcaMethods,
     Rtsne,
     testthat
-URL: https://github.com/hanhineva-lab/notameViz, https://hanhineva-lab.github.io/notame/
+URL: https://github.com/hanhineva-lab/notameViz
 BugReports: https://github.com/hanhineva-lab/notameViz/issues
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
