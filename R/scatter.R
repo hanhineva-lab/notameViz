@@ -1032,7 +1032,7 @@ mz_rt_plot <- function(object, p_col = NULL, p_limit = NULL, mz_col = NULL,
                        rt_col = NULL, color = NULL, 
                        title = "m/z vs retention time", subtitle = NULL,
                        color_scale = getOption("notame.color_scale_con"), 
-                       all_features = FALSE) {
+                       all_features = FALSE, ...) {
   if (is(object,  "SummarizedExperiment")) {
     data <- rowData(drop_flagged(object, all_features))
   } else if (inherits(object, c("data.frame", "tbl_df", "DataFrame"))) {

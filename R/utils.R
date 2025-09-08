@@ -3,7 +3,9 @@
 #' @import BiocGenerics
 #' @import methods
 #' @import SummarizedExperiment
-#' @importFrom notame drop_flagged drop_qcs flag quality assess_quality combined_data flag merge_notame_sets mark_nas "flag<-" flag_quality log_text init_log finish_log join_rowData citations
+#' @importFrom notame drop_flagged drop_qcs flag quality assess_quality
+#' combined_data flag merge_notame_sets mark_nas "flag<-" flag_quality log_text 
+#' init_log finish_log join_rowData citations
 NULL
 
 utils::globalVariables(c('.'))

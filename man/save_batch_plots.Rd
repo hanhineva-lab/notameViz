@@ -57,8 +57,8 @@ the default scale only has 2 values, so it can only accomodate 2 shapes.
 \dontshow{.old_wd <- setwd(tempdir())}
 data(toy_notame_set, package = "notame")
 # Batch correction
-batch_corrected <- batchCorr::normalizeBatches(toy_notame_set, assay.type = 1,
-  batches = "Batch", sampleGroup = "Group", refGroup = "QC", 
+batch_corrected <- batchCorr::normalizeBatches(toy_notame_set, 
+  assay.type = 1, batches = "Batch", sampleGroup = "Group", refGroup = "QC", 
   population = "all", name = "normalized")
 # Plots of each feature
 save_batch_plots(

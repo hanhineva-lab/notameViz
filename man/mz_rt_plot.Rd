@@ -14,7 +14,8 @@ mz_rt_plot(
   title = "m/z vs retention time",
   subtitle = NULL,
   color_scale = getOption("notame.color_scale_con"),
-  all_features = FALSE
+  all_features = FALSE,
+  ...
 )
 }
 \arguments{
