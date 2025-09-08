@@ -55,8 +55,7 @@ Plot density of distances between samples in QC samples and actual samples.
 data(toy_notame_set, package = "notame")
 plot_dist_density(toy_notame_set)
 # Drift correction tightens QCs together
-plot_dist_density(notame::correct_drift(toy_notame_set), 
-                  assay.type = "corrected")
+plot_dist_density(notame::correct_drift(toy_notame_set))
 
 }
 \seealso{

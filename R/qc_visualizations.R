@@ -42,8 +42,7 @@
 #' data(toy_notame_set, package = "notame")
 #' plot_dist_density(toy_notame_set)
 #' # Drift correction tightens QCs together
-#' plot_dist_density(notame::correct_drift(toy_notame_set), 
-#'                   assay.type = "corrected")
+#' plot_dist_density(notame::correct_drift(toy_notame_set))
 #'
 #' @seealso \code{\link[stats]{dist}}
 #'
@@ -380,8 +379,8 @@ plot_sample_boxplots <- function(object, all_features = FALSE, order_by,
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' data(toy_notame_set, package = "notame")
 #' # Batch correction
-#' batch_corrected <- batchCorr::normalizeBatches(toy_notame_set, assay.type = 1,
-#'   batches = "Batch", sampleGroup = "Group", refGroup = "QC", 
+#' batch_corrected <- batchCorr::normalizeBatches(toy_notame_set, 
+#'   assay.type = 1, batches = "Batch", sampleGroup = "Group", refGroup = "QC", 
 #'   population = "all", name = "normalized")
 #' # Plots of each feature
 #' save_batch_plots(
@@ -485,9 +484,8 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
 #' The plot shows 2 standard deviation spread for both QC samples and regular 
 #' samples.
 #'
-#' @param object a \code{
-#' \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
-#' object
+#' @param orig a SummarizedExperiment object with assay before drift correction
+#' @param dc a SummarizedExperiment object with assay after drift correction
 #' @param file path to the PDF file where the plots should be saved
 #' @param log_transform logical, was the drift correction done on log-
 #' transformed data?
@@ -498,7 +496,6 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
 #' @param shape_scale the shape scale as returned by a ggplot function
 #' @param assay.orig character, name of assay with abundances before correction
 #' @param assay.dc character, name of assay after correction
-#' @param assay.pred character, name of assay with interpolated fit of spline
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param shape_scale the shape scale as returned by a ggplot function
 
@@ -512,21 +509,18 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
 #' data(toy_notame_set, package = "notame")
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' dc <- notame::correct_drift(toy_notame_set, assay.type = 1,
-#'                             name = "corrected", 
-#' name_predicted = "predicted")
-#' save_dc_plots(dc[1],
+#'                             name = "corrected")
+#' save_dc_plots(toy_notame_set[1, ], dc[1, ], 
 #'   file = "drift_plots.pdf",
-#'   assay.orig = 1, assay.dc = "corrected", assay.pred = "predicted"
-#' )
+#'   assay.orig = 1, assay.dc = "corrected")
 #' \dontshow{setwd(.old_wd)}
 #' @export
-save_dc_plots <- function(object, file, log_transform = TRUE, 
+save_dc_plots <- function(orig, dc, file, log_transform = TRUE, 
                           width = 16, height = 8,
                           color = "QC", shape = color, 
                           color_scale = getOption("notame.color_scale_dis"),
                           shape_scale = scale_shape_manual(values = c(15, 16)),
-                          assay.orig, assay.dc = "corrected", 
-                          assay.pred = "drift_pred"){
+                          assay.orig = NULL, assay.dc = NULL){
   # Create a helper function for plotting
   dc_plot_helper <- function(data, fname, title = NULL) {
     p <- ggplot(data = data, mapping = aes(x = .data[["Injection_order"]], 
@@ -560,34 +554,35 @@ save_dc_plots <- function(object, file, log_transform = TRUE,
                                             shape = .data[[shape]]))
   }
   
-  assay(object, "log_orig") <- log(assay(object, assay.orig))
-  assay(object, "log_dc") <- log(assay(object, assay.dc))
+  orig <- .check_object(orig, pheno_QC = TRUE, pheno_injection = TRUE,
+                        assay.type = assay.orig)
+  dc <- .check_object(dc, pheno_QC = TRUE, pheno_injection = TRUE,
+                      assay.type = assay.dc)
   
-  orig_data_log <- combined_data(object, assay.type = "log_orig")
-  dc_data_log <- combined_data(object, assay.type = "log_dc")
-  orig_data <- combined_data(object, assay.type = assay.orig)
-  dc_data <- combined_data(object, assay.type = assay.dc)
-  predictions <- as.data.frame(t(assay(object, assay.pred)))
-  predictions$Injection_order <- orig_data$Injection_order
+  assay(orig, "log_orig") <- log(assay(orig, assay.orig))
+  assay(dc, "log_dc") <- log(assay(dc, assay.dc))
+  
+  orig_data_log <- combined_data(orig, assay.type = "log_orig")
+  dc_data_log <- combined_data(dc, assay.type = "log_dc")
+  orig_data <- combined_data(orig, assay.type = assay.orig)
+  dc_data <- combined_data(dc, assay.type = assay.dc)
 
   grDevices::pdf(file, width = width, height = height)
 
-  for (fname in rownames(object)) {
+  for (fname in rownames(dc)) {
     p2 <- dc_plot_helper(data = dc_data, fname = fname, title = "After")
 
     if (log_transform) {
       p1 <- dc_plot_helper(data = orig_data, fname = fname, title = "Before")
       p3 <- dc_plot_helper(data = orig_data_log, fname = fname,
-                           title = "Drift correction in log space") +
-        geom_line(data = predictions, color = "grey")
+                           title = "Drift correction in log space")
 
       p4 <- dc_plot_helper(data = dc_data_log, fname = fname,
                            title = "Corrected data in log space")
       p <- cowplot::plot_grid(p1, p3, p2, p4, nrow = 2)
     } else {
       p1 <- dc_plot_helper(data = orig_data, fname = fname,
-                           title = "Before (original values)") +
-        geom_line(data = predictions, color = "grey")
+                           title = "Before (original values)")
       p <- cowplot::plot_grid(p1, p2, nrow = 2)
     }
     plot(p)
@@ -683,6 +678,8 @@ save_dc_plots <- function(object, file, log_transform = TRUE,
 #' @param rt_col character, name of the column in features that contains 
 #' retention times
 #' @param file_path the prefix to the files to be plotted
+#'
+#' @return None, the function is invoked for its plot-saving side effect.
 #'
 #' @details
 #' Note that the input data has been assigned clusters but has not yet been 

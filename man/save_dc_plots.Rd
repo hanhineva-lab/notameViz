@@ -5,7 +5,8 @@
 \title{Save drift correction plots}
 \usage{
 save_dc_plots(
-  object,
+  orig,
+  dc,
   file,
   log_transform = TRUE,
   width = 16,
@@ -14,15 +15,14 @@ save_dc_plots(
   shape = color,
   color_scale = getOption("notame.color_scale_dis"),
   shape_scale = scale_shape_manual(values = c(15, 16)),
-  assay.orig,
-  assay.dc = "corrected",
-  assay.pred = "drift_pred"
+  assay.orig = NULL,
+  assay.dc = NULL
 )
 }
 \arguments{
-\item{object}{a \code{
-\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
-object}
+\item{orig}{a SummarizedExperiment object with assay before drift correction}
+
+\item{dc}{a SummarizedExperiment object with assay after drift correction}
 
 \item{file}{path to the PDF file where the plots should be saved}
 
@@ -42,8 +42,6 @@ transformed data?}
 \item{assay.orig}{character, name of assay with abundances before correction}
 
 \item{assay.dc}{character, name of assay after correction}
-
-\item{assay.pred}{character, name of assay with interpolated fit of spline}
 }
 \value{
 None, the function is invoked for its plot-saving side effect.
@@ -63,12 +61,10 @@ By default, the column used for color is also used for shape.
 data(toy_notame_set, package = "notame")
 \dontshow{.old_wd <- setwd(tempdir())}
 dc <- notame::correct_drift(toy_notame_set, assay.type = 1,
-                            name = "corrected", 
-name_predicted = "predicted")
-save_dc_plots(dc[1],
+                            name = "corrected")
+save_dc_plots(toy_notame_set[1, ], dc[1, ], 
   file = "drift_plots.pdf",
-  assay.orig = 1, assay.dc = "corrected", assay.pred = "predicted"
-)
+  assay.orig = 1, assay.dc = "corrected")
 \dontshow{setwd(.old_wd)}
 }
 \seealso{
