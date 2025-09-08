@@ -723,59 +723,37 @@ minus_log10 <- scales::trans_new("minus_log10",
 #' )
 #'
 #' @export
-setGeneric("volcano_plot", signature = "object",
-  function(object, x, p, p_fdr = NULL, color = NULL,
-          p_breaks = c(0.05, 0.01, 0.001, 1e-4), fdr_limit = 0.05,
-          log2_x = FALSE, center_x_axis = TRUE, x_lim = NULL, 
-          label = NULL, label_limit = 0.05, 
-          color_scale = getOption("notame.color_scale_con"),
-          title = "Volcano plot", subtitle = NULL,
-          text_base_size = 14, label_text_size = 4, ...) {
-    standardGeneric("volcano_plot")
-  }
-)
+volcano_plot <- function(object, x, p, p_fdr = NULL, color = NULL,
+                         p_breaks = c(0.05, 0.01, 0.001, 1e-4),
+                         fdr_limit = 0.05, log2_x = FALSE,
+                         center_x_axis = TRUE, x_lim = NULL, label = NULL, 
+                         label_limit = 0.05, 
+                         color_scale = getOption("notame.color_scale_con"),
+                         title = "Volcano plot", subtitle = NULL,
+                         text_base_size = 14, label_text_size = 4, ...) {
+  if (is(object,  "SummarizedExperiment")) {
+    data <- rowData(object)
+  } else if (inherits(object, c("data.frame", "tbl_df", "DataFrame"))) {
+    data <- object
+  } else {
+    stop("Please provide a data.frame-like object or a SummarizedExperiment")
+  }  
 
-#' @rdname volcano_plot
-#' @export
-setMethod("volcano_plot", c(object = "data.frame"),
-  function(object, x, p, p_fdr = NULL, color = NULL,
-           p_breaks = c(0.05, 0.01, 0.001, 1e-4), fdr_limit = 0.05,
-           log2_x = FALSE, center_x_axis = TRUE, x_lim = NULL, label = NULL,
-           label_limit = 0.05,
-           color_scale = getOption("notame.color_scale_con"),
-           title = "Volcano plot", subtitle = NULL,
-           text_base_size = 14, label_text_size = 4, ...) {
-    .volcano_plotter(object, x, p, p_fdr, color, p_breaks, fdr_limit,
-                     log2_x, center_x_axis, x_lim, label, label_limit,
-                     color_scale, title, subtitle, text_base_size,
-                     label_text_size, ...)
-  }
-)
+  .check_feature_data(data, feature_cols = c(x, p, p_fdr, color, label))
 
-#' @rdname volcano_plot
-#' @export
-setMethod("volcano_plot", c(object = "SummarizedExperiment"),
-  function(object, x, p, p_fdr = NULL, color = NULL,
-           p_breaks = c(0.05, 0.01, 0.001, 1e-4), fdr_limit = 0.05,
-           log2_x = FALSE, center_x_axis = TRUE, x_lim = NULL, 
-           label = NULL, label_limit = 0.05, 
-           color_scale = getOption("notame.color_scale_con"),
-           title = "Volcano plot", subtitle = NULL,
-           text_base_size = 14, label_text_size = 4, ...) {
-    .volcano_plotter(as.data.frame(rowData(object), optional = TRUE), x, p, 
-                     p_fdr, color, 
-                     p_breaks, fdr_limit, log2_x, center_x_axis, x_lim, label, 
-                     label_limit, color_scale, title, subtitle,
-                     text_base_size, label_text_size, ...)
+  .volcano_plotter(as.data.frame(data, optional = TRUE), x, p, 
+                   p_fdr, color, 
+                   p_breaks, fdr_limit, log2_x, center_x_axis, x_lim, label, 
+                   label_limit, color_scale, title, subtitle,
+                   text_base_size, label_text_size, ...)
   }
-)
+
 
 
 .volcano_plotter <- function(data, x, p, p_fdr, color, p_breaks, fdr_limit, 
                             log2_x, center_x_axis, x_lim, label, label_limit,
                             color_scale, title, subtitle, text_base_size,
                             label_text_size, ...) {
-  .check_feature_data(data, feature_cols = c(x, p, p_fdr, color, label))
                               
   if (center_x_axis && !is.null(x_lim)) {
     warning("Manually setting x-axis limits overrides x-axis centering.")
@@ -867,8 +845,7 @@ setMethod("volcano_plot", c(object = "SummarizedExperiment"),
 #'
 #' @param object a \code{
 #' \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
-#' object or a data frame. Feature data is used. If x 
-#' is a data frame, it is used as is.
+#' object or a data frame like object. Feature data is used.
 #' @param x,p the column names of x-axis and p-values
 #' @param effect column name of effect size (should have negative and positive 
 #' values).
@@ -892,7 +869,8 @@ setMethod("volcano_plot", c(object = "SummarizedExperiment"),
 #' # naturally, this looks messy as there are not enough p-values
 #' lm_results <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set), 
 #'   formula_char = "Feature ~ Group")
-#' lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), lm_results)
+#' lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), 
+#'   lm_results)
 #' # Traditional Manhattan plot from data frame
 #' manhattan_plot(lm_data,
 #'   x = "Average_Mz",
@@ -908,51 +886,32 @@ setMethod("volcano_plot", c(object = "SummarizedExperiment"),
 #' )
 #'
 #' @export
-setGeneric("manhattan_plot", signature = "object",
-  function(object, x, p, effect = NULL, p_fdr = NULL, color = NULL,
-           p_breaks = c(0.05, 0.01, 0.001, 1e-4), fdr_limit = 0.05,
-           x_lim = NULL, y_lim = NULL,
-           color_scale = getOption("notame.color_scale_con"),
-           title = "Manhattan plot", subtitle = NULL, ...) {
-    standardGeneric("manhattan_plot")
-  }
-)
+manhattan_plot <- function(object, x, p, effect = NULL, p_fdr = NULL,
+                           color = NULL, p_breaks = c(0.05, 0.01, 0.001, 1e-4), 
+                           fdr_limit = 0.05, x_lim = NULL, y_lim = NULL,
+                           color_scale = getOption("notame.color_scale_con"),
+                           title = "Manhattan plot", subtitle = NULL, ...){
+  if (is(object,  "SummarizedExperiment")) {
+    data <- rowData(object)
+  } else if (inherits(object, c("data.frame", "tbl_df", "DataFrame"))) {
+    data <- object
+  } else {
+    stop("Please provide a data.frame-like object or a SummarizedExperiment")
+  }  
 
-#' @rdname manhattan_plot
-#' @export
-setMethod("manhattan_plot", c(object = "data.frame"),
-  function(object, x, p, effect = NULL, p_fdr = NULL, color = NULL,
-           p_breaks = c(0.05, 0.01, 0.001, 1e-4), fdr_limit = 0.05,
-           x_lim = NULL, y_lim = NULL,
-           color_scale = getOption("notame.color_scale_con"),
-           title = "Manhattan plot", subtitle = NULL, ...) {
-    .manhattan_plotter(object, x, p, effect, p_fdr, color, p_breaks, fdr_limit,
-                       x_lim, y_lim, color_scale, title, subtitle, ...)
-  }
-)
+  .check_feature_data(data, feature_cols = c(x, p, effect, p_fdr, color))
 
-#' @rdname manhattan_plot
-#' @export
-setMethod("manhattan_plot", c(object = "SummarizedExperiment"),
-  function(object, x, p, effect = NULL, p_fdr = NULL, color = NULL,
-           p_breaks = c(0.05, 0.01, 0.001, 1e-4), fdr_limit = 0.05,
-           x_lim = NULL, y_lim = NULL,
-           color_scale = getOption("notame.color_scale_con"),
-           title = "Manhattan plot", subtitle = NULL, ...) {
-    .manhattan_plotter(as.data.frame(rowData(object), optional = TRUE), x, p, 
-                       effect, p_fdr, 
-                       color, p_breaks, fdr_limit, x_lim, y_lim, color_scale, 
-                       title, subtitle, ...)
+  .manhattan_plotter(as.data.frame(data, optional = TRUE), x, p, 
+                     effect, p_fdr, 
+                     color, p_breaks, fdr_limit, x_lim, y_lim, color_scale, 
+                     title, subtitle, ...)
   }
-)
 
 
 .manhattan_plotter <- function(data, x, p, effect, p_fdr, color, p_breaks,
                               fdr_limit, x_lim, y_lim, color_scale,
                               title, subtitle, ...) {
-  
-  .check_feature_data(data, feature_cols = c(x, p, effect, p_fdr, color))
-  
+    
   if (min(data[, p]) > max(p_breaks)) {
     warning("All the p-values are larger than the p-value breaks supplied.", 
             " Consider using larger p_breaks for plotting.")
@@ -1064,48 +1023,33 @@ setMethod("manhattan_plot", c(object = "SummarizedExperiment"),
 #' mz_rt_plot(with_results, p_col = "GroupB.p.value", color = "GroupB.estimate")
 #'
 #' # Plot the results from the results dataframe
-#' lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), lm_results)
+#' lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), 
+#'                             lm_results)
 #' mz_rt_plot(lm_data, p_col = "GroupB.p.value", color = "GroupB.estimate")
 #'
 #' @export
-setGeneric("mz_rt_plot", signature = "object",
-  function(object, p_col = NULL, p_limit = NULL, mz_col = NULL, rt_col = NULL,
-           color = NULL, title = "m/z retention time", subtitle = NULL,
-           color_scale = getOption("notame.color_scale_con"), ...) {
-    standardGeneric("mz_rt_plot")
-  }
-)
+mz_rt_plot <- function(object, p_col = NULL, p_limit = NULL, mz_col = NULL, 
+                       rt_col = NULL, color = NULL, 
+                       title = "m/z vs retention time", subtitle = NULL,
+                       color_scale = getOption("notame.color_scale_con"), 
+                       all_features = FALSE) {
+  if (is(object,  "SummarizedExperiment")) {
+    data <- rowData(drop_flagged(object, all_features))
+  } else if (inherits(object, c("data.frame", "tbl_df", "DataFrame"))) {
+    data <- object
+  } else {
+    stop("Please provide a data.frame-like object or a SummarizedExperiment")
+  }  
 
-#' @rdname mz_rt_plot
-#' @export
-setMethod("mz_rt_plot", c(object = "data.frame"),
-  function(object, p_col = NULL, p_limit = NULL, mz_col = NULL, rt_col = NULL,
-           color = NULL, title = "m/z vs retention time", subtitle = NULL,
-           color_scale = getOption("notame.color_scale_con")) {
-    .mz_rt_plotter(object, p_col, p_limit, mz_col, rt_col, color, 
-                   title, subtitle, color_scale)
-  }
-)
-#' @rdname mz_rt_plot
-#' @export
-setMethod("mz_rt_plot", c(object = "SummarizedExperiment"),
-  function(object, p_col = NULL, p_limit = NULL, mz_col = NULL, rt_col = NULL,
-           color = NULL, title = "m/z vs retention time", subtitle = NULL,
-           color_scale = getOption("notame.color_scale_con"), 
-           all_features = FALSE) {
-    data <- as.data.frame(rowData(drop_flagged(object, all_features)), 
-                          optional = TRUE)
-    .mz_rt_plotter(data, p_col, p_limit, mz_col, rt_col, color, title, 
-                   subtitle, color_scale, all_features)
-  }
-)
+  .check_feature_data(data, feature_cols = c(p_col, mz_col, rt_col, color),
+                      feature_split = TRUE)
 
-
+  .mz_rt_plotter(as.data.frame(data, optional = TRUE), p_col, p_limit, 
+                 mz_col, rt_col, color, title, subtitle, color_scale)
+}
 
 .mz_rt_plotter <- function(x, p_col, p_limit, mz_col, rt_col, color, 
-                          title, subtitle, color_scale, all_features) {
-  .check_feature_data(x, feature_cols = c(p_col, mz_col, rt_col, color),
-                      feature_split = TRUE)
+                          title, subtitle, color_scale) {
   if (!is.null(p_limit) && !is.null(p_col)) {
     x <- x[which(x[, p_col] < p_limit), ]
     if (nrow(x) == 0) {

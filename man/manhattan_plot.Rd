@@ -2,45 +2,9 @@
 % Please edit documentation in R/scatter.R
 \name{manhattan_plot}
 \alias{manhattan_plot}
-\alias{manhattan_plot,data.frame-method}
-\alias{manhattan_plot,SummarizedExperiment-method}
 \title{Manhattan plot}
 \usage{
 manhattan_plot(
-  object,
-  x,
-  p,
-  effect = NULL,
-  p_fdr = NULL,
-  color = NULL,
-  p_breaks = c(0.05, 0.01, 0.001, 1e-04),
-  fdr_limit = 0.05,
-  x_lim = NULL,
-  y_lim = NULL,
-  color_scale = getOption("notame.color_scale_con"),
-  title = "Manhattan plot",
-  subtitle = NULL,
-  ...
-)
-
-\S4method{manhattan_plot}{data.frame}(
-  object,
-  x,
-  p,
-  effect = NULL,
-  p_fdr = NULL,
-  color = NULL,
-  p_breaks = c(0.05, 0.01, 0.001, 1e-04),
-  fdr_limit = 0.05,
-  x_lim = NULL,
-  y_lim = NULL,
-  color_scale = getOption("notame.color_scale_con"),
-  title = "Manhattan plot",
-  subtitle = NULL,
-  ...
-)
-
-\S4method{manhattan_plot}{SummarizedExperiment}(
   object,
   x,
   p,
@@ -60,8 +24,7 @@ manhattan_plot(
 \arguments{
 \item{object}{a \code{
 \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
-object or a data frame. Feature data is used. If x 
-is a data frame, it is used as is.}
+object or a data frame like object. Feature data is used.}
 
 \item{x, p}{the column names of x-axis and p-values}
 
@@ -103,7 +66,8 @@ data(toy_notame_set, package = "notame")
 # naturally, this looks messy as there are not enough p-values
 lm_results <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set), 
   formula_char = "Feature ~ Group")
-lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), lm_results)
+lm_data <- dplyr::left_join(as.data.frame(rowData(toy_notame_set)), 
+  lm_results)
 # Traditional Manhattan plot from data frame
 manhattan_plot(lm_data,
   x = "Average_Mz",
