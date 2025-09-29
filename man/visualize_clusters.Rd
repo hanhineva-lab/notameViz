@@ -60,9 +60,9 @@ peak area.
 \dontshow{.old_wd <- setwd(tempdir())}
 data(toy_notame_set, package = "notame")
 # The parameters are really weird because example data is imaginary
-clustered <- notame::cluster_features(toy_notame_set, rt_window = 1, 
-                                      corr_thresh = 0.5, d_thresh = 0.6)
+# clustered <- notame::cluster_features(toy_notame_set, rt_window = 1, 
+#                                     corr_thresh = 0.5, d_thresh = 0.6)
 
-#visualise_clusters(clustered, rt_window = 1, file_path = "cluster_plots.pdf")
+# visualize_clusters(clustered, rt_window = 1, file_path = "cluster_plots.pdf")
 \dontshow{setwd(.old_wd)}
 }
