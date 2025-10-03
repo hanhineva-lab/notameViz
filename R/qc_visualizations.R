@@ -507,7 +507,6 @@ save_batch_plots <- function(orig, corrected, file, save = TRUE, width = 14,
 #' @param assay.dc character, name of assay after correction
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param shape_scale the shape scale as returned by a ggplot function
-#' @param ... arguments passed to grDevices formats
 #`
 #' @return None, the function is invoked for its plot-saving side effect.
 #'
@@ -737,7 +736,15 @@ visualize_clusters <- function(object, min_size = 3, rt_window = 1 / 60,
     p2 <- .plot_features(feature_data, features, mpa_col, mz_col, rt_col, 
                          rt_window)
     
-    cluster_list[[i]] <- list("heatmap" = p1, "features" = p2)
-  }    
-  cluster_list
+    if (save) {
+      grDevices::pdf(paste0(file_path, cluster_id, ".pdf"), 
+                     width = 10, height = 10)
+      plot(p1)
+      plot(p2)
+      grDevices::dev.off()
+    } else { 
+      cluster_list[[i]] <- list("heatmap" = p1, "features" = p2)
+    }
+  }
+  if (!save) cluster_list
 }
