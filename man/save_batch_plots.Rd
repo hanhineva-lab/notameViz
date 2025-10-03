@@ -8,6 +8,7 @@ save_batch_plots(
   orig,
   corrected,
   file,
+  save = TRUE,
   width = 14,
   height = 10,
   batch = "Batch",
@@ -25,6 +26,8 @@ save_batch_plots(
 objects before and after batch effect correction}
 
 \item{file}{path to the PDF file where the plots will be saved}
+
+\item{save}{logical, if false, the plots are not saved but returned as a list}
 
 \item{width, height}{width and height of the plots in inches}
 

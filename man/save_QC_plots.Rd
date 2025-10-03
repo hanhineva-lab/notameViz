@@ -115,7 +115,8 @@ in time point order
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}
 data(toy_notame_set, package = "notame")
-save_QC_plots(toy_notame_set, prefix="figures/toy_notame_set", perplexity=5,
+rp_neg_set <- toy_notame_set[rowData(toy_notame_set)$Split == "RP_neg", ]
+save_QC_plots(rp_neg_set, prefix="figures/RP_neg", perplexity=5,
               group = "Group", color = "Group", time = "Time", 
               id = "Subject_ID")
 \dontshow{setwd(.old_wd)}

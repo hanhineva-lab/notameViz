@@ -1,7 +1,7 @@
 Package: notameViz
 Type: Package
 Title: Workflow for non-targeted LC-MS metabolic profiling
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: c(
     person("Anton", "Klåvus", role = c("aut", "cph"),
            comment = c(ORCID = "0000-0003-2612-0230")),
@@ -51,6 +51,7 @@ Imports:
 Suggests:
     batchCorr,
     BiocStyle,
+    igraph,
     knitr,
     notameStats,
     pcaMethods,
@@ -58,6 +59,6 @@ Suggests:
     testthat
 URL: https://github.com/hanhineva-lab/notameViz
 BugReports: https://github.com/hanhineva-lab/notameViz/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Config/testthat/parallel: true

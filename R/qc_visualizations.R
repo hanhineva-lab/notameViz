@@ -363,6 +363,7 @@ plot_sample_boxplots <- function(object, all_features = FALSE, order_by,
 #' \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 #' objects before and after batch effect correction
 #' @param file path to the PDF file where the plots will be saved
+#' @param save logical, if false, the plots are not saved but returned as a list
 #' @param width,height width and height of the plots in inches
 #' @param batch,color,shape column names of pheno data for batch labels,
 #' and column used for coloring and shaping points (by default batch and QC)
@@ -389,7 +390,7 @@ plot_sample_boxplots <- function(object, all_features = FALSE, order_by,
 #' )
 #' \dontshow{setwd(.old_wd)}
 #' @export
-save_batch_plots <- function(orig, corrected, file, width = 14, 
+save_batch_plots <- function(orig, corrected, file, save = TRUE, width = 14, 
                              height = 10, batch = "Batch", color = "Batch", 
                              shape = "QC",
                              color_scale = getOption("notame.color_scale_dis"),
@@ -464,15 +465,22 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
       
     p
   }
-  # Save plots with original and corrected data to pdf
-  grDevices::pdf(file, width = width, height = height)
+  # Save plots or add to list
+  batch_plots <- list()
+  if (save) grDevices::pdf(file, width = width, height = height)
   for (feature in rownames(orig)) {
     p1 <- batch_plot_helper(data_orig, feature, batch_means_orig)
     p2 <- batch_plot_helper(data_corr, feature, batch_means_corr)
     p <- cowplot::plot_grid(p1, p2, nrow = 2)
-    plot(p)
+    if (save) plot(p) else batch_plots[[feature]] <- p
   }
-  grDevices::dev.off()
+  
+  if (save) {
+    grDevices::dev.off()
+    log_text(paste("\nSaved batch plots to:", file))
+  } else {
+    batch_plots
+  }
 }
 
 #' Save drift correction plots
@@ -487,6 +495,7 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
 #' @param orig a SummarizedExperiment object with assay before drift correction
 #' @param dc a SummarizedExperiment object with assay after drift correction
 #' @param file path to the PDF file where the plots should be saved
+#' @param save logical, if false, the plots are not saved but returned as a list
 #' @param log_transform logical, was the drift correction done on log-
 #' transformed data?
 #' @param width,height width and height of the plots in inches
@@ -498,7 +507,8 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
 #' @param assay.dc character, name of assay after correction
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param shape_scale the shape scale as returned by a ggplot function
-
+#' @param ... arguments passed to grDevices formats
+#`
 #' @return None, the function is invoked for its plot-saving side effect.
 #'
 #' @details By default, the column used for color is also used for shape.
@@ -508,6 +518,7 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
 #' @examples
 #' data(toy_notame_set, package = "notame")
 #' \dontshow{.old_wd <- setwd(tempdir())}
+#' toy_notame_set <- notame::mark_nas(toy_notame_set, value = 0)
 #' dc <- notame::correct_drift(toy_notame_set, assay.type = 1,
 #'                             name = "corrected")
 #' save_dc_plots(toy_notame_set[1, ], dc[1, ], 
@@ -515,7 +526,8 @@ save_batch_plots <- function(orig, corrected, file, width = 14,
 #'   assay.orig = 1, assay.dc = "corrected")
 #' \dontshow{setwd(.old_wd)}
 #' @export
-save_dc_plots <- function(orig, dc, file, log_transform = TRUE, 
+save_dc_plots <- function(orig, dc, file, save = TRUE, 
+                          log_transform = TRUE, 
                           width = 16, height = 8,
                           color = "QC", shape = color, 
                           color_scale = getOption("notame.color_scale_dis"),
@@ -567,8 +579,8 @@ save_dc_plots <- function(orig, dc, file, log_transform = TRUE,
   orig_data <- combined_data(orig, assay.type = assay.orig)
   dc_data <- combined_data(dc, assay.type = assay.dc)
 
-  grDevices::pdf(file, width = width, height = height)
-
+  drift_plots <- list()
+  if (save) grDevices::pdf(file, width = width, height = height)
   for (fname in rownames(dc)) {
     p2 <- dc_plot_helper(data = dc_data, fname = fname, title = "After")
 
@@ -585,10 +597,14 @@ save_dc_plots <- function(orig, dc, file, log_transform = TRUE,
                            title = "Before (original values)")
       p <- cowplot::plot_grid(p1, p2, nrow = 2)
     }
-    plot(p)
+    if (save) plot(p) else drift_plots[[fname]] <- p
   }
-  grDevices::dev.off()
-  log_text(paste("\nSaved drift correction plots to:", file))
+  if (save) {
+    grDevices::dev.off()
+    log_text(paste("\nSaved drift correction plots to:", file))
+  } else {
+    drift_plots
+  }
 }
 
 .plot_features <- function(feature_data, features, mpa_col, 
@@ -615,11 +631,9 @@ save_dc_plots <- function(orig, dc, file, log_transform = TRUE,
     geom_errorbarh(aes(xmin = .data$rtmin, xmax = .data$rtmax), 
                    color = "steelblue4") +
     theme_minimal() +
-    labs(x = "Retention time", y = "Mass-to-charge ratio", 
-         title = "Retention time & tolerance")
+    labs(x = "Retention time", y = "Mass-to-charge ratio")
 
-  plot(p1)
-  plot(p2)
+  cowplot::plot_grid(p1, p2)
 }
 
 .plot_heatmaps <- function(feature_data, features, mz_col, rt_col) {
@@ -677,9 +691,8 @@ save_dc_plots <- function(orig, dc, file, log_transform = TRUE,
 #' mass-to-charge ratios
 #' @param rt_col character, name of the column in features that contains 
 #' retention times
-#' @param file_path the prefix to the files to be plotted
 #'
-#' @return None, the function is invoked for its plot-saving side effect.
+#' @return A list with clusters containing two plots, a heatmap 
 #'
 #' @details
 #' Note that the input data has been assigned clusters but has not yet been 
@@ -690,16 +703,16 @@ save_dc_plots <- function(orig, dc, file, log_transform = TRUE,
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' data(toy_notame_set, package = "notame")
 #' # The parameters are really weird because example data is imaginary
-#' # clustered <- notame::cluster_features(toy_notame_set, rt_window = 1, 
-#' #                                     corr_thresh = 0.5, d_thresh = 0.6)
+#' clustered <- notame::cluster_features(toy_notame_set, rt_window = 1, 
+#'                                       corr_thresh = 0.5, d_thresh = 0.6)
 #'
-#' # visualize_clusters(clustered, rt_window = 1, file_path = "cluster_plots.pdf")
+#' cluster_plots <- visualize_clusters(clustered, rt_window = 1)
 #' \dontshow{setwd(.old_wd)}
 #' @export
 visualize_clusters <- function(object, min_size = 3, rt_window = 1 / 60,
                                n_clust_col = "Cluster_size",
                                clust_col = "Cluster_features", mpa_col = "MPA",
-                               mz_col = NULL, rt_col = NULL, file_path) {
+                               mz_col = NULL, rt_col = NULL) {
                                  
   if (is.null(mz_col) || is.null(rt_col)) {
     cols <- .find_mz_rt_cols(rowData(object))
@@ -710,6 +723,7 @@ visualize_clusters <- function(object, min_size = 3, rt_window = 1 / 60,
   data <- rowData(object)[rowData(object)[, n_clust_col] == min_size, ]
   
   clusters <- unique(data[, clust_col])
+  cluster_list <- stats::setNames(vector("list", length(clusters)), clusters)
   for (i in seq_along(clusters)) {
     if (i %% 100 == 0) {
       message(i, " / ", length(clusters))
@@ -719,11 +733,11 @@ visualize_clusters <- function(object, min_size = 3, rt_window = 1 / 60,
     features <- strsplit(cluster, ";")[[1]]
 
     feature_data <- data[data[, "Feature_ID"] %in% features, ]
-    cluster_id <- feature_data$Cluster_ID[1]
-    grDevices::pdf(paste0(file_path, cluster_id, ".pdf"), 
-                    width = 10, height = 10)
-    .plot_heatmaps(feature_data, features, mz_col, rt_col)
-    .plot_features(feature_data, features, mpa_col, mz_col, rt_col, rt_window)
-    grDevices::dev.off()
-  }
+    p1 <- .plot_heatmaps(feature_data, features, mz_col, rt_col)
+    p2 <- .plot_features(feature_data, features, mpa_col, mz_col, rt_col, 
+                         rt_window)
+    
+    cluster_list[[i]] <- list("heatmap" = p1, "features" = p2)
+  }    
+  cluster_list
 }

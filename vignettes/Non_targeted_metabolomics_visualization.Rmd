@@ -15,10 +15,10 @@ biblio-style: apalike
 ---
 
 The visualizations in `notameViz` can be used to monitor the processing and 
-explore the data, inspect individual features as well as plot results. See the 
-project example vignette in the notame package and [notame website reference 
-index](https://hanhineva-lab.github.io/notame/reference/index.html) for listing 
-of functions. Similar functionality is available in `miaViz` and `scater` 
+explore the data, inspect individual features as well as plot results. Please 
+see the [notame website](https://
+hanhineva-lab.github.io/notame/) and protocol article for more information 
+[@notame]. Similar functionality is available in `miaViz` and `scater` 
 packages.
 
 # Installation

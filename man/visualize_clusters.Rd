@@ -12,8 +12,7 @@ visualize_clusters(
   clust_col = "Cluster_features",
   mpa_col = "MPA",
   mz_col = NULL,
-  rt_col = NULL,
-  file_path
+  rt_col = NULL
 )
 }
 \arguments{
@@ -41,11 +40,9 @@ mass-to-charge ratios}
 
 \item{rt_col}{character, name of the column in features that contains 
 retention times}
-
-\item{file_path}{the prefix to the files to be plotted}
 }
 \value{
-None, the function is invoked for its plot-saving side effect.
+A list with clusters containing two plots, a heatmap
 }
 \description{
 Draws multiple visualizations of each cluster, creating a separate file for
@@ -60,9 +57,9 @@ peak area.
 \dontshow{.old_wd <- setwd(tempdir())}
 data(toy_notame_set, package = "notame")
 # The parameters are really weird because example data is imaginary
-# clustered <- notame::cluster_features(toy_notame_set, rt_window = 1, 
-#                                     corr_thresh = 0.5, d_thresh = 0.6)
+clustered <- notame::cluster_features(toy_notame_set, rt_window = 1, 
+                                      corr_thresh = 0.5, d_thresh = 0.6)
 
-# visualize_clusters(clustered, rt_window = 1, file_path = "cluster_plots.pdf")
+cluster_plots <- visualize_clusters(clustered, rt_window = 1)
 \dontshow{setwd(.old_wd)}
 }

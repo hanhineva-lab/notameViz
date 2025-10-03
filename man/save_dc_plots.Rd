@@ -8,6 +8,7 @@ save_dc_plots(
   orig,
   dc,
   file,
+  save = TRUE,
   log_transform = TRUE,
   width = 16,
   height = 8,
@@ -26,6 +27,8 @@ save_dc_plots(
 
 \item{file}{path to the PDF file where the plots should be saved}
 
+\item{save}{logical, if false, the plots are not saved but returned as a list}
+
 \item{log_transform}{logical, was the drift correction done on log-
 transformed data?}
 
@@ -42,6 +45,8 @@ transformed data?}
 \item{assay.orig}{character, name of assay with abundances before correction}
 
 \item{assay.dc}{character, name of assay after correction}
+
+\item{...}{arguments passed to grDevices formats}
 }
 \value{
 None, the function is invoked for its plot-saving side effect.
@@ -60,6 +65,7 @@ By default, the column used for color is also used for shape.
 \examples{
 data(toy_notame_set, package = "notame")
 \dontshow{.old_wd <- setwd(tempdir())}
+toy_notame_set <- notame::mark_nas(toy_notame_set, value = 0)
 dc <- notame::correct_drift(toy_notame_set, assay.type = 1,
                             name = "corrected")
 save_dc_plots(toy_notame_set[1, ], dc[1, ], 
