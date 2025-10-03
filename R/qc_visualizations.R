@@ -736,15 +736,7 @@ visualize_clusters <- function(object, min_size = 3, rt_window = 1 / 60,
     p2 <- .plot_features(feature_data, features, mpa_col, mz_col, rt_col, 
                          rt_window)
     
-    if (save) {
-      grDevices::pdf(paste0(file_path, cluster_id, ".pdf"), 
-                     width = 10, height = 10)
-      plot(p1)
-      plot(p2)
-      grDevices::dev.off()
-    } else { 
-      cluster_list[[i]] <- list("heatmap" = p1, "features" = p2)
-    }
-  }
-  if (!save) cluster_list
+    cluster_list[[i]] <- list("heatmap" = p1, "features" = p2)
+  }    
+  cluster_list
 }

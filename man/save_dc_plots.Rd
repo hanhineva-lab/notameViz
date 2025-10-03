@@ -45,8 +45,6 @@ transformed data?}
 \item{assay.orig}{character, name of assay with abundances before correction}
 
 \item{assay.dc}{character, name of assay after correction}
-
-\item{...}{arguments passed to grDevices formats}
 }
 \value{
 None, the function is invoked for its plot-saving side effect.
