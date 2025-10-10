@@ -105,10 +105,6 @@ plot_dist_density <- function(object, all_features = FALSE,
 #'
 #' @export
 plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
-  if (!requireNamespace("notameStats", quietly = TRUE)) {
-    stop("Package \'notameStats\' needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
   from <- .get_from_name(object, assay.type)
@@ -116,19 +112,30 @@ plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
                          assay.type = from)
 
   # Apply linear model to QC samples and biological samples separately
-  lm_all <- notameStats::perform_lm(object, "Feature ~ Injection_order", 
-                                    assay.type = from)
-  lm_sample <- notameStats::perform_lm(object[, object$QC != "QC"], 
-                                       "Feature ~ Injection_order",
-                                       assay.type = from)
-  lm_qc <- notameStats::perform_lm(object[, object$QC == "QC"],
-                                   "Feature ~ Injection_order",
-                                   assay.type = from)
+  lm_all <- lm(t(assay(object, from)) ~ Injection_order, data = colData(object)) |> 
+    broom::tidy() |> 
+    dplyr::filter(term == "Injection_order")
+
+  sample_object <- object[, !object$QC == "QC"]
+  lm_sample <- lm(
+    t(assay(sample_object, from)) ~ Injection_order, 
+    data = colData(sample_object)
+  ) |> 
+    broom::tidy() |> 
+    dplyr::filter(term == "Injection_order")
+
+  qc_object <- object[, object$QC == "QC"]
+  lm_qc <- lm(
+    t(assay(qc_object, from)) ~ Injection_order, 
+    data = colData(qc_object)
+  ) |> 
+    broom::tidy() |> 
+    dplyr::filter(term == "Injection_order")
 
   # Only interested in the p_values
-  p_values <- list("All samples" = lm_all$Injection_order.p.value,
-                   "Biological samples" = lm_sample$Injection_order.p.value,
-                   "QC samples" = lm_qc$Injection_order.p.value)
+  p_values <- list("All samples" = lm_all$p.value,
+                   "Biological samples" = lm_sample$p.value,
+                   "QC samples" = lm_qc$p.value)
   # Plotting
   plot_p_histogram(p_values)
 }
@@ -168,7 +175,7 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE,
   for (i in seq_along(p_values)) {
     p <- ggplot(data.frame(P = p_values[[i]]), aes(.data$P)) +
       geom_histogram(breaks = breaks, col = "grey50", 
-                     fill = "grey80", size = 1) +
+                     fill = "grey80", linewidth = 1) +
       labs(x = x_label, y = "Frequency") +
       ggtitle(names(p_values)[i]) +
       theme_minimal() +
@@ -179,7 +186,7 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE,
       finite_count <- sum(is.finite(p_values[[i]]))
       h_line <- finite_count / (length(breaks) - 1)
       p <- p + geom_hline(yintercept = h_line, color = "red", 
-                          linetype = "dashed", size = 1)
+                          linetype = "dashed", linewidth = 1)
     }
 
     plots <- c(plots, list(p))

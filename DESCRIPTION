@@ -33,6 +33,7 @@ Depends:
     SummarizedExperiment
 Imports:
     BiocGenerics,
+    broom,
     cowplot,
     devEMF,
     dplyr,
