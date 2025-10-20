@@ -225,7 +225,7 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE,
     flags <- factor(flags) |> stats::relevel(ref = "Good")
     
     fp <- ggplot(data.frame(flags), aes(x = flags)) +
-      geom_bar(col = "grey50", fill = "grey80", size = 1) +
+      geom_bar(col = "grey50", fill = "grey80", linewidth = 1) +
         scale_y_continuous(sec.axis = sec_axis(~ . * 100 / length(flags), 
       name = "Percentage")) +
         theme_minimal() +
