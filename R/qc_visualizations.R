@@ -168,7 +168,7 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE,
   for (i in seq_along(p_values)) {
     p <- ggplot(data.frame(P = p_values[[i]]), aes(.data$P)) +
       geom_histogram(breaks = breaks, col = "grey50", 
-                     fill = "grey80", size = 1) +
+                     fill = "grey80", linewidth = 1) +
       labs(x = x_label, y = "Frequency") +
       ggtitle(names(p_values)[i]) +
       theme_minimal() +
@@ -179,7 +179,7 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE,
       finite_count <- sum(is.finite(p_values[[i]]))
       h_line <- finite_count / (length(breaks) - 1)
       p <- p + geom_hline(yintercept = h_line, color = "red", 
-                          linetype = "dashed", size = 1)
+                          linetype = "dashed", linewidth = 1)
     }
 
     plots <- c(plots, list(p))
@@ -216,8 +216,6 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE,
 #' @export
 plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE,
                          assay.type = NULL) {
-  # Drop flagged features
-  object <- drop_flagged(object, all_features = all_features)
   from <- .get_from_name(object, assay.type)
   object <- .check_object(object, feature_flag = TRUE)
   if (plot_flags) {
@@ -225,14 +223,16 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE,
     flags <- flag(object)
     flags[is.na(flags)] <- "Good"
     flags <- factor(flags) |> stats::relevel(ref = "Good")
-
+    
     fp <- ggplot(data.frame(flags), aes(x = flags)) +
       geom_bar(col = "grey50", fill = "grey80", size = 1) +
-      scale_y_continuous(sec.axis = sec_axis(~ . * 100 / length(flags), 
-                         name = "Percentage")) +
-      theme_minimal() +
-      labs(x = "Flag")
-  }
+        scale_y_continuous(sec.axis = sec_axis(~ . * 100 / length(flags), 
+      name = "Percentage")) +
+        theme_minimal() +
+          labs(x = "Flag")
+      }
+  # Drop flagged features
+  object <- drop_flagged(object, all_features = all_features)
 
   if (is.null(quality(object))) {
     message("\n", "Quality metrics not found, computing them now")
