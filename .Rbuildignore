@@ -1,0 +1,13 @@
+^renv$
+^renv\.lock$
+^Meta$
+^doc$
+^data-raw$
+^.*\.Rproj$
+^\.Rproj\.user$
+^.*\.lintr$
+^LICENSE\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
