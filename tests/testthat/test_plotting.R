@@ -103,7 +103,9 @@ test_that("Group lineplot naming works", {
 })
 
 test_that("Batch plots work with and without multiple assays", {
-  path <- paste0(tempdir(), "\\test\\batch_plots.pdf")
+  dir_path <- paste0(tempdir(), "\\test")
+  dir.create(dir_path)
+  path <- paste0(dir_path, "\\batch_plots.pdf")
   ex_set <- toy_notame_set
   names(assays(ex_set)) <- "original"
   batch_corrected <- toy_notame_set

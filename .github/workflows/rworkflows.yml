@@ -6,7 +6,6 @@ name: rworkflows
       - main
       - devel
       - RELEASE_**
-      - include-rworkflows
   pull_request:
     branches:
       - master
