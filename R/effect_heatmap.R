@@ -102,15 +102,15 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
                                 symmetric_aspect_ratio = TRUE,
                                 title = NULL, subtitle = NULL, fill_scale = NA){
   # Get default fill scales
-  if (!is.null(fill_scale)) {
-    if (is.na(fill_scale)) {
-      if (discretize_effect ||
-          class(data[, effect]) %in% c("factor", "character")) {
-        fill_scale <- getOption("notame.fill_scale_div_dis")
-      } else {
-        fill_scale <- getOption("notame.fill_scale_div_con")
-      }
-    }
+  is_auto_scale <- !is.null(fill_scale) &&
+    !is(fill_scale, "Scale") &&
+    is.na(fill_scale)
+  is_discrete_scale <- discretize_effect ||
+    class(data[, effect]) %in% c("factor", "character")
+  if (is_auto_scale && is_discrete_scale) {
+    fill_scale <- getOption("notame.fill_scale_div_dis")
+  } else if (is_auto_scale) {
+    fill_scale <- getOption("notame.fill_scale_div_con")
   }
 
   # Possible log-transform effect, should show on legend
