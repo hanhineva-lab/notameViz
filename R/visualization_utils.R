@@ -217,6 +217,10 @@ save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
                           time = NULL, id = NULL, color = NULL,
                           assay.type = NULL) {
   file_names <- ""
+  # If not grouped, plot PCA and t-SNE on QC information
+  group <- ifelse(is.null(group), "QC", group)
+  color <- ifelse(is.null(color), group, color)
+
   from <- .get_from_name(object, assay.type)
   object <- .check_object(object, pheno_QC = TRUE,
                          pheno_cols = c(time, id, color), assay.type = from)
@@ -251,7 +255,7 @@ save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
                "tSNE_hexbin", file_names, perplexity = perplexity)
   }
   # If not grouped, plot PCA and t-SNE on QC information
-  if (is.null(colData(object)[, group])) {
+  if (is.null(group)) {
     group <- "QC"
   }
   .save_name(object, prefix, format, plot_pca, "PCA_group",
@@ -259,7 +263,7 @@ save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
   .save_name(object, prefix, format, plot_tsne, "tSNE_group", file_names,
              perplexity = perplexity, color = group)
   # Time point
-  if (!is.null(colData(object)[, time])) {
+  if (!is.null(time)) {
     .save_name(object, prefix, format, plot_pca, "PCA_time",
                file_names, color = time)
     .save_name(object, prefix, format, plot_tsne, "tSNE_time", file_names,
@@ -268,14 +272,14 @@ save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
                file_names, color = time, width = 15)
   }
   # Time point OR group
-  if (!is.null(colData(object)[, group]) || !is.null(colData(object)[, time])){
+  if (!is.null(group) || !is.null(time)){
     by <- c(group, time)
     .save_name(object, prefix, format, plot_sample_boxplots, 
                "boxplots_group", file_names, width = 15, 
                order_by = by, fill_by = by)
   }
   # Time point AND group
-  if (!is.null(colData(object)[, group]) && !is.null(colData(object)[, time])) {
+  if (!is.null(group) && !is.null(time)) {
     .save_name(object, prefix, format, plot_pca, "PCA_group_time", file_names,
                color = time, shape = group)
     .save_name(object, prefix, format, plot_tsne, "tSNE_group_time", file_names,
@@ -283,9 +287,7 @@ save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
                perplexity = perplexity)
   }
   # Multiple time points per subject
-  if (!is.null(colData(object)[, time]) &&
-    !is.null(colData(object)[, id]) &&
-    sum(object$QC == "QC") == 0) {
+  if (!is.null(time) && !is.null(id) && sum(object$QC == "QC") == 0) {
     .save_name(object, prefix, format, plot_pca_arrows, "PCA_arrows", 
                file_names, color = group, time = time, subject = id)
     .save_name(object, prefix, format, plot_tsne_arrows, "tSNE_arrows", 
