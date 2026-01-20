@@ -69,55 +69,25 @@ save_plot <- function(p, file, ...) {
   
   if (!is.null(p)) {
     file_name <- paste0(prefix, "_", name, ".", format) 
+    file_names <- c(file_names, file_name)
     save_plot(p, file = file_name, width = width, height = height)
-    assign("file_names", paste(file_names, file_name), pos = parent.frame())
   }
   assign(".Random.seed", save_seed, envir = .GlobalEnv)
 
+  file_names
 }
 
 .merge_to_pdf <- function(prefix, file_names, remove_singles) {
-  prefix <- gsub("_$", "", prefix)
-  merged_file <- paste0(prefix, ".pdf")
-  os <- Sys.info()[["sysname"]]
-  output <- NULL
-  if (os == "Windows") {
-    # Merge files
-    output <- shell(paste("pdftk", file_names, "cat output", merged_file),
-                    intern = TRUE)
-  } else if (os == "Linux") {
-    output <- system2("pdfunite", args = paste(file_names, merged_file),
-                      stdout = TRUE)
-  } else if (os == "Darwin") {
-    output <- system2('"/System/Library/Automator/Combine PDF',
-                      'Pages.action/Contents/Resources/join.py" -o',
-                      args = paste(merged_file, file_names), stdout = TRUE)
-  } else {
-    log_text(paste0("Unfortunately your operating system is",
-                    " not yet supported by the merging"))
-    return()
-  }
-  if (length(output) && output != "0") {
-    log_text(paste("Merging plots resulted in the following message:",
-                   paste0(output, collapse = " ")))
-  } else {
-    log_text(paste("Attempted merging plots to", merged_file))
-    if (remove_singles) {
-      log_text("Removing single plot files")
-      if (os == "Windows") {
-        output2 <- shell(paste("del", file_names), intern = TRUE)
-      } else {
-        output2 <- system2("rm", args = file_names, stdout = TRUE)
-      }
-      if (length(output2) && output2 != "0") {
-        log_text(paste("Removing single plot files resulted in",
-                       "the following message:",
-                        paste0(output2, collapse = " ")))
-      }
-    }
+  log_text("Merging plots to a single pdf")
+  output_file <- paste0(prefix, ".pdf")
+  qpdf::pdf_combine(file_names, output = output_file)
+  log_text(paste("Saved to:", output_file))
+  # Remove single files if wanted
+  if (remove_singles) {
+    file.remove(file_names)
+    log_text("Removed single plot files")
   }
 }
-
 
 #' Write all relevant pretreatment visualizations to pdf
 #'
@@ -146,11 +116,8 @@ save_plot <- function(p, file, ...) {
 #'
 #' @details If \code{merge} is \code{TRUE} and \code{format} is \code{pdf},
 #' then a file containing all the visualizations named \code{prefix.pdf} will 
-#' be created. NOTE: on Windows this requires installation of pdftk 
-#' (\url{https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/})
-#' and on Linux you need to have pdfunite installed. On MacOS, no external 
-#' software is needed. Note that at least on Windows, prefix should be a path 
-#' from the root, so that the underlying system command will find the files.
+#' be created. 
+#' 
 #' The type of visualizations to be saved depends on the type of object.
 #' Here is a comprehensive list of the visualizations:
 #' \itemize{
@@ -200,8 +167,6 @@ save_plot <- function(p, file, ...) {
 #' }
 #' }
 #'
-#' @seealso \code{\link{save_plot}}
-#'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' data(toy_notame_set, package = "notame")
@@ -213,86 +178,87 @@ save_plot <- function(p, file, ...) {
 #'
 #' @export
 save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
-                          merge = FALSE, remove_singles = FALSE, group = NULL, 
+                          merge = FALSE, remove_singles = FALSE, group = NULL,
                           time = NULL, id = NULL, color = NULL,
                           assay.type = NULL) {
-  file_names <- ""
+  file_names <- list()
+  
   # If not grouped, plot PCA and t-SNE on QC information
   group <- ifelse(is.null(group), "QC", group)
   color <- ifelse(is.null(color), group, color)
 
   from <- .get_from_name(object, assay.type)
   object <- .check_object(object, pheno_QC = TRUE,
-                         pheno_cols = c(time, id, color), assay.type = from)
+    pheno_cols = c(time, id, color), assay.type = from)
   assays(object) <- assays(object)[from]
   if (sum(object$QC == "QC")) {
-    .save_name(object, prefix, format, fun = plot_dist_density, 
-               name = "density_plot", file_names, width = 8, height = 6)
-    .save_name(object, prefix, format, plot_injection_lm,
+    file_names <- .save_name(object, prefix, format, fun = plot_dist_density, 
+        name = "density_plot", file_names, width = 8, height = 6)
+    file_names <- .save_name(object, prefix, format, plot_injection_lm,
                "lm_p_histograms", file_names)
   }
   # Quality metrics
-  .save_name(object, prefix, format, plot_quality,
+  file_names <- .save_name(object, prefix, format, plot_quality,
              "quality_metrics", file_names)
   # Plots with injection order
-  .save_name(object, prefix, format, plot_sample_boxplots,
+  file_names <- .save_name(object, prefix, format, plot_sample_boxplots,
              "boxplots_injection", file_names, order_by = "Injection_order", 
              fill_by = "QC", width = 15)
-  .save_name(object, prefix, format, plot_pca, "PCA_injection", 
+  file_names <- .save_name(object, prefix, format, plot_pca, "PCA_injection", 
              file_names, color = "Injection_order")
-  .save_name(object, prefix, format, plot_tsne, "tSNE_injection",
+  file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_injection",
              file_names, perplexity = perplexity, color = "Injection_order")
   # Clustering
-  .save_name(object, prefix, format, plot_dendrogram, "dendrogram", 
+  file_names <- .save_name(object, prefix, format, plot_dendrogram, "dendrogram", 
              file_names, width = 15, color = color)
-  .save_name(object, prefix, format, plot_sample_heatmap, "heatmap_samples", 
+  file_names <- .save_name(object, prefix, format, plot_sample_heatmap, "heatmap_samples", 
              file_names, width = 15, height = 16, group = group)
   # For large sets, plot hexbin plots
   if (ncol(object) > 60) {
-    .save_name(object, prefix, format, plot_pca_hexbin,
+    file_names <- .save_name(object, prefix, format, plot_pca_hexbin,
                "PCA_hexbin", file_names)
-    .save_name(object, prefix, format, plot_tsne_hexbin, 
+    file_names <- .save_name(object, prefix, format, plot_tsne_hexbin, 
                "tSNE_hexbin", file_names, perplexity = perplexity)
   }
   # If not grouped, plot PCA and t-SNE on QC information
   if (is.null(group)) {
     group <- "QC"
   }
-  .save_name(object, prefix, format, plot_pca, "PCA_group",
+  file_names <- .save_name(object, prefix, format, plot_pca, "PCA_group",
              file_names, color = group)
-  .save_name(object, prefix, format, plot_tsne, "tSNE_group", file_names,
-             perplexity = perplexity, color = group)
+  file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_group", file_names,
+                                 perplexity = perplexity, color = group)
   # Time point
   if (!is.null(time)) {
-    .save_name(object, prefix, format, plot_pca, "PCA_time",
+    file_names <- .save_name(object, prefix, format, plot_pca, "PCA_time",
                file_names, color = time)
-    .save_name(object, prefix, format, plot_tsne, "tSNE_time", file_names,
-               color = time, perplexity = perplexity)
-    .save_name(object, prefix, format, plot_dendrogram, "dendrogram_time",
+    file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_time", file_names,
+                                   color = time, perplexity = perplexity)
+    file_names <- .save_name(object, prefix, format, plot_dendrogram, "dendrogram_time",
                file_names, color = time, width = 15)
   }
   # Time point OR group
   if (!is.null(group) || !is.null(time)){
     by <- c(group, time)
-    .save_name(object, prefix, format, plot_sample_boxplots, 
+    file_names <- .save_name(object, prefix, format, plot_sample_boxplots, 
                "boxplots_group", file_names, width = 15, 
-               order_by = by, fill_by = by)
+                                  order_by = by, fill_by = by)
   }
   # Time point AND group
   if (!is.null(group) && !is.null(time)) {
-    .save_name(object, prefix, format, plot_pca, "PCA_group_time", file_names,
-               color = time, shape = group)
-    .save_name(object, prefix, format, plot_tsne, "tSNE_group_time", file_names,
-               color = time, shape = group,
-               perplexity = perplexity)
+    file_names <- .save_name(object, prefix, format, plot_pca, "PCA_group_time", file_names,
+                                   color = time, shape = group)
+    file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_group_time", file_names,
+                                   color = time, shape = group,
+                                   perplexity = perplexity)
   }
   # Multiple time points per subject
   if (!is.null(time) && !is.null(id) && sum(object$QC == "QC") == 0) {
-    .save_name(object, prefix, format, plot_pca_arrows, "PCA_arrows", 
+    file_names <- .save_name(object, prefix, format, plot_pca_arrows, "PCA_arrows", 
                file_names, color = group, time = time, subject = id)
-    .save_name(object, prefix, format, plot_tsne_arrows, "tSNE_arrows", 
+    file_names <- .save_name(object, prefix, format, plot_tsne_arrows, "tSNE_arrows", 
                file_names, perplexity = perplexity, color = group, time = time, 
-               subject = id)
+                                   subject = id)
   }
   if (merge && format == "pdf") {
     .merge_to_pdf(prefix, file_names, remove_singles)

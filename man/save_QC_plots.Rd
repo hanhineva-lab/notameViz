@@ -58,11 +58,8 @@ PDFs with a set prefix on filenames.
 \details{
 If \code{merge} is \code{TRUE} and \code{format} is \code{pdf},
 then a file containing all the visualizations named \code{prefix.pdf} will 
-be created. NOTE: on Windows this requires installation of pdftk 
-(\url{https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/})
-and on Linux you need to have pdfunite installed. On MacOS, no external 
-software is needed. Note that at least on Windows, prefix should be a path 
-from the root, so that the underlying system command will find the files.
+be created. 
+
 The type of visualizations to be saved depends on the type of object.
 Here is a comprehensive list of the visualizations:
 \itemize{
@@ -121,7 +118,4 @@ save_QC_plots(rp_neg_set, prefix="figures/RP_neg", perplexity=5,
               id = "Subject_ID")
 \dontshow{setwd(.old_wd)}
 
-}
-\seealso{
-\code{\link{save_plot}}
 }
