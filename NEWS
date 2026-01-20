@@ -1,6 +1,7 @@
 Changes in version 1.1.0
 
 Bug fixes
+- save_QC_plots() now correctly uses "QC" as default color option
 - Fixed an issue that prevented using custom color scale in plot_effect_heatmap()
 
 Changes in version 0.99.0
