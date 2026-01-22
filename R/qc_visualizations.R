@@ -105,8 +105,8 @@ plot_dist_density <- function(object, all_features = FALSE,
 #'
 #' @export
 plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
-  if (!requireNamespace("notameStats", quietly = TRUE)) {
-    stop("Package \'notameStats\' needed for this function to work.", 
+  if (!requireNamespace("limma", quietly = TRUE)) {
+    stop("Package 'limma' needed for this function to work.", 
          " Please install it.", call. = FALSE)
   }
   # Drop flagged compounds if not told otherwise
@@ -115,20 +115,27 @@ plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
   object <- .check_object(object, pheno_injection = TRUE, pheno_QC = TRUE,
                          assay.type = from)
 
-  # Apply linear model to QC samples and biological samples separately
-  lm_all <- notameStats::perform_lm(object, "Feature ~ Injection_order", 
-                                    assay.type = from)
-  lm_sample <- notameStats::perform_lm(object[, object$QC != "QC"], 
-                                       "Feature ~ Injection_order",
-                                       assay.type = from)
-  lm_qc <- notameStats::perform_lm(object[, object$QC == "QC"],
-                                   "Feature ~ Injection_order",
-                                   assay.type = from)
+  get_injection_p <- function(obj) {
+    design <- stats::model.matrix(
+      ~Injection_order,
+      data = SummarizedExperiment::colData(obj)
+    )
+    fit <- limma::eBayes(limma::lmFit(assay(obj, from), design))
+    ordinary.t <- fit$coef[,2] / fit$stdev.unscaled[,2] / fit$sigma
+    2 * stats::pt(-abs(ordinary.t), df = fit$df.residual)
+  }
+  
+  # Apply linear model to different sample groups
+  p_all <- get_injection_p(object)
+  p_sample <- get_injection_p(object[, object$QC != "QC"])
+  p_qc <- get_injection_p(object[, object$QC == "QC"])
 
   # Only interested in the p_values
-  p_values <- list("All samples" = lm_all$Injection_order.p.value,
-                   "Biological samples" = lm_sample$Injection_order.p.value,
-                   "QC samples" = lm_qc$Injection_order.p.value)
+  p_values <- list(
+    "All samples" = p_all,
+    "Biological samples" = p_sample,
+    "QC samples" = p_qc
+  )
   # Plotting
   plot_p_histogram(p_values)
 }

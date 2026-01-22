@@ -1,6 +1,7 @@
 Changes in version 1.1.0
 
 New features
+- plot_injection_lm() now utilizes limma for p-value calculation, resulting in improved performance (instant plotting)
 - Merging QC plots in save_QC_plots() does not require external software in Windows/Linux
 
 Bug fixes
