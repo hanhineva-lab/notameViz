@@ -220,10 +220,6 @@ save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
     file_names <- .save_name(object, prefix, format, plot_tsne_hexbin, 
                "tSNE_hexbin", file_names, perplexity = perplexity)
   }
-  # If not grouped, plot PCA and t-SNE on QC information
-  if (is.null(group)) {
-    group <- "QC"
-  }
   file_names <- .save_name(object, prefix, format, plot_pca, "PCA_group",
              file_names, color = group)
   file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_group", file_names,
