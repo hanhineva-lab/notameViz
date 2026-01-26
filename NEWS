@@ -1,4 +1,5 @@
-Changes in version 1.1.0
+Changes in version 1.1.x
+- remove plot_effect_heatmap(), use ComplexHeatmap package instead
 
 New features
 - Merging QC plots in save_QC_plots() does not require external software in Windows/Linux
