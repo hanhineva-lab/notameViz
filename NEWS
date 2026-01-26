@@ -1,5 +1,8 @@
 Changes in version 1.1.0
 
+New features
+- Merging QC plots in save_QC_plots() does not require external software in Windows/Linux
+
 Bug fixes
 - save_QC_plots() now correctly uses "QC" as default color option
 - Fixed an issue that prevented using custom color scale in plot_effect_heatmap()
