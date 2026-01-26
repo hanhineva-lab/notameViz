@@ -84,7 +84,7 @@ save_plot <- function(p, file, ...) {
   log_text(paste("Saved to:", output_file))
   # Remove single files if wanted
   if (remove_singles) {
-    file.remove(file_names)
+    file.remove(unlist(file_names))
     log_text("Removed single plot files")
   }
 }
@@ -199,62 +199,62 @@ save_QC_plots <- function(object, prefix, format = "pdf", perplexity = 30,
   }
   # Quality metrics
   file_names <- .save_name(object, prefix, format, plot_quality,
-             "quality_metrics", file_names)
+      "quality_metrics", file_names)
   # Plots with injection order
   file_names <- .save_name(object, prefix, format, plot_sample_boxplots,
-             "boxplots_injection", file_names, order_by = "Injection_order", 
-             fill_by = "QC", width = 15)
+      "boxplots_injection", file_names, order_by = "Injection_order", 
+      fill_by = "QC", width = 15)
   file_names <- .save_name(object, prefix, format, plot_pca, "PCA_injection", 
-             file_names, color = "Injection_order")
+      file_names, color = "Injection_order")
   file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_injection",
-             file_names, perplexity = perplexity, color = "Injection_order")
+      file_names, perplexity = perplexity, color = "Injection_order")
   # Clustering
-  file_names <- .save_name(object, prefix, format, plot_dendrogram, "dendrogram", 
-             file_names, width = 15, color = color)
-  file_names <- .save_name(object, prefix, format, plot_sample_heatmap, "heatmap_samples", 
-             file_names, width = 15, height = 16, group = group)
+  file_names <- .save_name(object, prefix, format, plot_dendrogram, 
+      "dendrogram", file_names, width = 15, color = color)
+  file_names <- .save_name(object, prefix, format, plot_sample_heatmap, 
+      "heatmap_samples",  file_names, width = 15, height = 16, 
+             group = group)
   # For large sets, plot hexbin plots
   if (ncol(object) > 60) {
     file_names <- .save_name(object, prefix, format, plot_pca_hexbin,
-               "PCA_hexbin", file_names)
+      "PCA_hexbin", file_names)
     file_names <- .save_name(object, prefix, format, plot_tsne_hexbin, 
-               "tSNE_hexbin", file_names, perplexity = perplexity)
+      "tSNE_hexbin", file_names, perplexity = perplexity)
   }
   file_names <- .save_name(object, prefix, format, plot_pca, "PCA_group",
-             file_names, color = group)
-  file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_group", file_names,
-                                 perplexity = perplexity, color = group)
+      file_names, color = group)
+  file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_group", 
+      file_names, perplexity = perplexity, color = group)
   # Time point
   if (!is.null(time)) {
     file_names <- .save_name(object, prefix, format, plot_pca, "PCA_time",
-               file_names, color = time)
-    file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_time", file_names,
-                                   color = time, perplexity = perplexity)
-    file_names <- .save_name(object, prefix, format, plot_dendrogram, "dendrogram_time",
-               file_names, color = time, width = 15)
+        file_names, color = time)
+    file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_time", 
+        file_names, color = time, perplexity = perplexity)
+    file_names <- .save_name(object, prefix, format, plot_dendrogram, 
+        "dendrogram_time", file_names, color = time, width = 15)
   }
   # Time point OR group
   if (!is.null(group) || !is.null(time)){
     by <- c(group, time)
     file_names <- .save_name(object, prefix, format, plot_sample_boxplots, 
-               "boxplots_group", file_names, width = 15, 
-                                  order_by = by, fill_by = by)
+        "boxplots_group", file_names, width = 15, order_by = by, fill_by = by)
   }
   # Time point AND group
   if (!is.null(group) && !is.null(time)) {
-    file_names <- .save_name(object, prefix, format, plot_pca, "PCA_group_time", file_names,
-                                   color = time, shape = group)
-    file_names <- .save_name(object, prefix, format, plot_tsne, "tSNE_group_time", file_names,
-                                   color = time, shape = group,
-                                   perplexity = perplexity)
+    file_names <- .save_name(object, prefix, format, plot_pca, 
+        "PCA_group_time", file_names, color = time, shape = group)
+    file_names <- .save_name(object, prefix, format, plot_tsne, 
+        "tSNE_group_time", file_names, color = time, shape = group,
+        perplexity = perplexity)
   }
   # Multiple time points per subject
   if (!is.null(time) && !is.null(id) && sum(object$QC == "QC") == 0) {
-    file_names <- .save_name(object, prefix, format, plot_pca_arrows, "PCA_arrows", 
-               file_names, color = group, time = time, subject = id)
-    file_names <- .save_name(object, prefix, format, plot_tsne_arrows, "tSNE_arrows", 
-               file_names, perplexity = perplexity, color = group, time = time, 
-                                   subject = id)
+    file_names <- .save_name(object, prefix, format, plot_pca_arrows, 
+        "PCA_arrows", file_names, color = group, time = time, subject = id)
+    file_names <- .save_name(object, prefix, format, plot_tsne_arrows, 
+        "tSNE_arrows", file_names, perplexity = perplexity, color = group, 
+        time = time, subject = id)
   }
   if (merge && format == "pdf") {
     .merge_to_pdf(prefix, file_names, remove_singles)
