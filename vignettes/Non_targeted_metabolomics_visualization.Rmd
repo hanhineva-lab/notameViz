@@ -66,12 +66,11 @@ linux, make sure `pdfunite` is installed.
 
 # Results visualizations
 
-Results visualizations return ggplot2 objects. Common visalizations include 
-effect heatmaps and volcano plots. Manhattan plots and cloud plots can be used 
-to relate results to biochemical features such as m/z and RT and are plotted 
-separately for each mode. To save these functions to a PDF file, use 
+Results visualizations return ggplot2 objects. Volcano plots are useful for 
+summarizing results of univariate tests. Manhattan plots and cloud plots can be 
+used to relate results to biochemical features such as m/z and RT and are 
+plotted separately for each mode. To save these functions to a PDF file, use 
 `save_plot`.
-
 
 ```{r}
 lm_results <- notameStats::perform_lm(notame::drop_qcs(toy_notame_set), 
