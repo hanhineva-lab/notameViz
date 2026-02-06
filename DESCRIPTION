@@ -40,6 +40,7 @@ Imports:
     ggdendro,
     ggrepel,
     grDevices,
+    limma,
     methods,
     notame,
     pcaMethods,
@@ -56,7 +57,6 @@ Suggests:
     BiocStyle,
     igraph,
     knitr,
-    limma,
     notameStats,
     testthat
 URL: https://github.com/hanhineva-lab/notameViz
