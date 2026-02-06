@@ -4,32 +4,46 @@
 \alias{plot_injection_lm}
 \title{Estimate the magnitude of drift}
 \usage{
-plot_injection_lm(object, all_features = FALSE, assay.type = NULL)
+plot_injection_lm(
+  object,
+  all_features = FALSE,
+  eBayes = FALSE,
+  assay.type = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{a \code{
 \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 object}
 
-\item{all_features}{logical, should all features be used? 
+\item{all_features}{logical, should all features be used?
 If FALSE (the default), flagged features are removed before visualization.}
 
-\item{assay.type}{character, assay to be used in case of multiple assays}
+\item{eBayes}{logical, whether to use limma's eBayes function to compute
+p-values. If FALSE (default), ordinary t-statistics are used.}
+
+\item{assay.type}{character, assay to be used in case of multiple assays.}
+
+\item{...}{additional arguments passed to \code{\link[limma]{eBayes}}
+function if eBayes = TRUE}
 }
 \value{
 A ggplot object.
 }
 \description{
-Plots histograms of p-values from linear regression model, where each 
-feature is predicted
-by injection order alone. The expected uniform distribution is represented 
-by a dashed red line.
+Plots histograms of p-values from linear regression model, where each
+feature is predicted by injection order alone. The expected uniform
+distribution is represented by a dashed red line. High amount of
+significant p-values indicates a strong drift effect.
 }
 \examples{
 data(toy_notame_set, package = "notame")
 plot_injection_lm(toy_notame_set)
+# Use eBayes to get more stable p-values with small sample size
+plot_injection_lm(toy_notame_set, eBayes = TRUE)
 
 }
 \seealso{
-\code{\link{plot_p_histogram}}
+\code{\link{plot_p_histogram}} \code{\link[limma]{eBayes}}
 }

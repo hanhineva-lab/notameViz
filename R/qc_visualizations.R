@@ -83,48 +83,65 @@ plot_dist_density <- function(object, all_features = FALSE,
 
 #' Estimate the magnitude of drift
 #'
-#' Plots histograms of p-values from linear regression model, where each 
-#' feature is predicted
-#' by injection order alone. The expected uniform distribution is represented 
-#' by a dashed red line.
+#' Plots histograms of p-values from linear regression model, where each
+#' feature is predicted by injection order alone. The expected uniform
+#' distribution is represented by a dashed red line. High amount of
+#' significant p-values indicates a strong drift effect.
 #'
 #' @param object a \code{
 #' \link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 #' object
-#' @param all_features logical, should all features be used? 
+#' @param all_features logical, should all features be used?
 #' If FALSE (the default), flagged features are removed before visualization.
-#' @param assay.type character, assay to be used in case of multiple assays
+#' @param eBayes logical, whether to use limma's eBayes function to compute
+#' p-values. If FALSE (default), ordinary t-statistics are used.
+#' @param assay.type character, assay to be used in case of multiple assays.
+#' @param ... additional arguments passed to \code{\link[limma]{eBayes}}
+#' function if eBayes = TRUE
 #'
 #' @return A ggplot object.
 #'
-#' @seealso \code{\link{plot_p_histogram}}
+#' @seealso \code{\link{plot_p_histogram}} \code{\link[limma]{eBayes}}
 #'
 #' @examples
 #' data(toy_notame_set, package = "notame")
 #' plot_injection_lm(toy_notame_set)
+#' # Use eBayes to get more stable p-values with small sample size
+#' plot_injection_lm(toy_notame_set, eBayes = TRUE)
 #'
 #' @export
-plot_injection_lm <- function(object, all_features = FALSE, assay.type = NULL) {
-  if (!requireNamespace("limma", quietly = TRUE)) {
-    stop("Package 'limma' needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
+plot_injection_lm <- function(
+  object,
+  all_features = FALSE,
+  eBayes = FALSE,
+  assay.type = NULL,
+  ...
+) {
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
   from <- .get_from_name(object, assay.type)
-  object <- .check_object(object, pheno_injection = TRUE, pheno_QC = TRUE,
-                         assay.type = from)
+  object <- .check_object(
+    object,
+    pheno_injection = TRUE,
+    pheno_QC = TRUE,
+    assay.type = from
+  )
 
   get_injection_p <- function(obj) {
     design <- stats::model.matrix(
       ~Injection_order,
       data = SummarizedExperiment::colData(obj)
     )
-    fit <- limma::eBayes(limma::lmFit(assay(obj, from), design))
-    ordinary.t <- fit$coef[,2] / fit$stdev.unscaled[,2] / fit$sigma
-    2 * stats::pt(-abs(ordinary.t), df = fit$df.residual)
+    fit <- limma::eBayes(limma::lmFit(assay(obj, from), design), ...)
+    if (eBayes) {
+      p <- fit$p.value[, 2]
+    } else {
+      ordinary.t <- fit$coef[, 2] / fit$stdev.unscaled[, 2] / fit$sigma
+      p <- 2 * stats::pt(-abs(ordinary.t), df = fit$df.residual)
+    }
+    p
   }
-  
+
   # Apply linear model to different sample groups
   p_all <- get_injection_p(object)
   p_sample <- get_injection_p(object[, object$QC != "QC"])
